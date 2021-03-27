@@ -1,4 +1,6 @@
-from users_system.util import generate_token, send_email, reset_aux_token
+import jwt
+
+from users_system.util import generate_token, send_email
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
@@ -52,10 +54,12 @@ def forgot_password(request):
     except User.DoesNotExist:
         raise Http404
     if request.method == 'POST':
-        # user.aux_token = generate_token()
-        user.aux_token = generate_token()
-        user.save()
-        send_email(user)
+        token = generate_token(user)
+        print(token)
+        reset_link = f'http://127.0.0.1:3000/?token={token}'
+        send_email(subject='Forgot password',
+                   message=f'Please, click the link to restore your password: {reset_link}',
+                   recipients=[user.email])
         message_response = {'message': 'The email has been sent'}
         return Response(message_response, status=status.HTTP_200_OK)
 
@@ -63,15 +67,17 @@ def forgot_password(request):
 @api_view(['POST'])
 def reset_password(request):
     try:
-        user = User.objects.get(aux_token=request.data['token'])
-    except User.DoesNotExist:
-        raise Http404
-    if request.method == 'POST':
+        payload = jwt.decode(jwt=request.data['token'], key=settings.SECRET_KEY, algorithms='HS256')
+        user = User.objects.get(id=payload['user_id'])
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            reset_aux_token(user)
             message_response = {'message': 'Your password has been changed'}
             return Response(message_response, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    except User.DoesNotExist:
+        raise Http404
+    except jwt.ExpiredSignatureError:
+        return Response({'error': 'Reset link expired'}, status.HTTP_400_BAD_REQUEST)
+    except jwt.exceptions.DecodeError:
+        return Response({'error': 'Invalid token'}, status.HTTP_400_BAD_REQUEST)
