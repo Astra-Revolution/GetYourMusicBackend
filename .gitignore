@@ -5,4 +5,13 @@ __pycache__/
 *.pyc
 *.pyo
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
+*.log
+*.pot
+pycache/

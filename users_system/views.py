@@ -1,5 +1,4 @@
-from django.core.mail import send_mail
-from django.shortcuts import redirect
+from users_system.util import generate_token, send_email, reset_aux_token
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
@@ -44,3 +43,35 @@ def user_detail(request, user_id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def forgot_password(request):
+    try:
+        user = User.objects.get(email=request.data['email'])
+    except User.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        # user.aux_token = generate_token()
+        user.aux_token = generate_token()
+        user.save()
+        send_email(user)
+        message_response = {'message': 'The email has been sent'}
+        return Response(message_response, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def reset_password(request):
+    try:
+        user = User.objects.get(aux_token=request.data['token'])
+    except User.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            reset_aux_token(user)
+            message_response = {'message': 'Your password has been changed'}
+            return Response(message_response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
