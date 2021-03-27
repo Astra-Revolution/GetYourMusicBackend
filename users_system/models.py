@@ -7,6 +7,7 @@ from .managers import UserManager
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     is_active = models.BooleanField('active', default=True)
+    is_confirmed = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     objects = UserManager()
 

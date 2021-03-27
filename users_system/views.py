@@ -1,3 +1,5 @@
+from django.core.mail import send_mail
+from django.shortcuts import redirect
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
@@ -42,3 +44,9 @@ def user_detail(request, user_id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['PATCH'])
+# def active_account(request, token):
+#    if request.method == 'PATCH':
+
