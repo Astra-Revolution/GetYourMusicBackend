@@ -42,18 +42,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         district = District.objects.get(id=validated_data["district_id"])
         validated_data["district"] = district
         validated_data["register_date"] = str(date.today())
-        typeProfile = validated_data["type"]
+        type_profile = validated_data["type"]
         profile = None
-        if typeProfile == "Musician":
+        if type_profile == "Musician":
             profile = Musician.objects.create(**validated_data)
-        elif typeProfile == "Organizer":
+        elif type_profile == "Organizer":
             profile = Organizer.objects.create(**validated_data)
         return profile
 
     class Meta:
         model = Profile
         fields = ('id', 'first_name', 'last_name', 'birth_date', 'phone',
-                'type', 'register_date', 'user_email', 'district_name', 'district_id')
+                  'type', 'register_date', 'user_email', 'district_name', 'district_id')
         read_only_fields = ('register_date',)
 
 
