@@ -2,14 +2,20 @@
 
 from django.db import migrations
 
-def create_data(app, )
+from contract_system.models import ContractState
+
+
+def create_data(app, schema_editor):
+    states = ['unanswered', 'progress', 'cancelled', 'finalized']
+    for state in states:
+        ContractState(state=state).save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contract_system', '0002_auto_20210328_0216'),
     ]
 
     operations = [
+        migrations.RunPython(create_data)
     ]
