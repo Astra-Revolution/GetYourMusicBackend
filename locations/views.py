@@ -24,7 +24,7 @@ def regions_list(request):
 @api_view(['GET'])
 def list_provinces_by_region(request, region_id):
     if request.method == 'GET':
-        provinces = Province.objects.filter(regionid=region_id)
+        provinces = Province.objects.filter(region_id=region_id)
         serializer = ProvinceSerializer(provinces, many=True)
         return Response(serializer.data)
 
@@ -33,6 +33,6 @@ def list_provinces_by_region(request, region_id):
 @api_view(['GET'])
 def list_districts_by_province(request, province_id):
     if request.method == 'GET':
-        districts = District.objects.filter(provinceid=province_id)
+        districts = District.objects.filter(province_id=province_id)
         serializer = DistrictSerializer(districts, many=True)
         return Response(serializer.data)
