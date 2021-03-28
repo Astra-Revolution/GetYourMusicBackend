@@ -2,7 +2,7 @@ from rest_framework import serializers
 from datetime import date
 from .models import Publication, Comment, Notification
 from users_system.models import Profile, Musician
-
+import social_system.notifier
 
 class PublicationSerializer(serializers.ModelSerializer):
     musician_name = serializers.CharField(source='musician.first_name', read_only=True)
@@ -30,6 +30,7 @@ class CommentSerializer(serializers.ModelSerializer):
         publication = Publication.objects.get(id=validated_data["publication_id"])
         validated_data["publication"] = publication
         comment = Comment.objects.create(**validated_data)
+        social_system.notifier.notifier(comment)
         return comment
 
     class Meta:

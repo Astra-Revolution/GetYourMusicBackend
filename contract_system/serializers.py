@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import ContractState, Contract, Qualification
 from users_system.models import Organizer, Musician
 from locations.models import District
+import social_system.notifier
 
 
 class ContractStateSerializer(serializers.ModelSerializer):
@@ -27,6 +28,7 @@ class ContractSerializer(serializers.ModelSerializer):
         contract_state = ContractState.objects.get(state='unanswered')
         validated_data["contract_state"] = contract_state
         contract = Contract.objects.create(**validated_data)
+        social_system.notifier.notifier(contract)
         return contract
 
     class Meta:

@@ -3,6 +3,7 @@ from .models import User, Profile, Musician, Organizer, Following
 from locations.models import District
 from datetime import date
 from django.contrib.auth.hashers import make_password
+import social_system.notifier
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -79,7 +80,7 @@ class FollowingSerializer(serializers.ModelSerializer):
         validated_data["followed"] = followed
         validated_data["follow_date"] = str(date.today())
         following = Following.objects.create(**validated_data)
-        # social_system.notifier.notifier(following)
+        social_system.notifier.notifier(following)
         return following
 
     class Meta:

@@ -7,6 +7,7 @@ from rest_framework.views import *
 from users_system.models import Organizer, Musician
 from .models import ContractState, Contract, Qualification
 from .serializers import ContractStateSerializer, ContractSerializer, QualificationSerializer
+import social_system.notifier
 
 states_response = openapi.Response('contract states description', ContractStateSerializer(many=True))
 contracts_response = openapi.Response('contracts description', ContractSerializer(many=True))
@@ -119,6 +120,7 @@ def update_contract_state(request, contract_id, state_id):
 
     if request.method == 'PATCH':
         contract.contract_state = state
+        social_system.notifier.notifier(contract)
         serializer = ContractSerializer(contract, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
