@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'locations.apps.LocationsConfig',
     'media_system.apps.MediaSystemConfig',
     'contract_system.apps.ContractSystemConfig',
+    'social_system.apps.SocialSystemConfig',
     'rest_framework',
     'rest_framework_swagger',
     'drf_yasg',

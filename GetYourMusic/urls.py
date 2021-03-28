@@ -39,5 +39,6 @@ urlpatterns = [
     path('api/', include('users_system.urls')),
     path('api/', include('locations.urls')),
     path('api/', include('media_system.urls')),
-    path('api/', include('contract_system.urls'))
+    path('api/', include('contract_system.urls')),
+    path('api/', include('social_system.urls'))
 ]
