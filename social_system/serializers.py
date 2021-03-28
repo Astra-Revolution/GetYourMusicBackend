@@ -11,7 +11,7 @@ class PublicationSerializer(serializers.ModelSerializer):
         musician = Musician.objects.get(id=validated_data["musician_id"])
         validated_data["musician"] = musician
         validated_data["update_time"] = str(date.today())
-        publication = Publication.objects.create(validated_data)
+        publication = Publication.objects.create(**validated_data)
         return publication
 
     class Meta:
@@ -29,7 +29,7 @@ class CommentSerializer(serializers.ModelSerializer):
         validated_data["commenter"] = commenter
         publication = Publication.objects.get(id=validated_data["publication_id"])
         validated_data["publication"] = publication
-        comment = Comment.objects.create(validated_data)
+        comment = Comment.objects.create(**validated_data)
         return comment
 
     class Meta:

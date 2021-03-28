@@ -217,7 +217,7 @@ def musicians_instruments(request, musician_id, instrument_id):
 @permission_classes([IsAuthenticated])
 def list_followed_by_follower(request, follower_id):
     if request.method == 'GET':
-        followed = Following.objects.filter(followerid=follower_id)
+        followed = Following.objects.filter(follower_id=follower_id)
         serializer = FollowingSerializer(followed, many=True)
         return Response(serializer.data)
 
@@ -227,7 +227,7 @@ def list_followed_by_follower(request, follower_id):
 @permission_classes([IsAuthenticated])
 def list_follower_by_followed(request, followed_id):
     if request.method == 'GET':
-        follower = Following.objects.filter(followedid=followed_id)
+        follower = Following.objects.filter(followed_id=followed_id)
         serializer = FollowingSerializer(follower, many=True)
         return Response(serializer.data)
 
@@ -253,6 +253,6 @@ def create_delete_following(request, follower_id, followed_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
-        following = Following.objects.get(followerid=follower_id, followedid=followed_id)
+        following = Following.objects.get(follower_id=follower_id, followed_id=followed_id)
         following.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -5,8 +5,8 @@ from django.urls import reverse
 from rest_framework import status
 from locations.models import Region, Province, District
 from users_system.models import User, Musician, Organizer
-from .models import ContractState, Contract
-from .serializers import ContractStateSerializer, ContractSerializer
+from .models import ContractState, Contract, Qualification
+from .serializers import ContractStateSerializer, ContractSerializer, QualificationSerializer
 
 
 class ContractStateTest(APITestCase):
@@ -158,4 +158,103 @@ class ContractTest(APITestCase):
         response = self.client.patch(
             reverse('update_contract_state', kwargs={'contract_id': self.contract_one.id,
                                                      'state_id': 30}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class QualificationTest(APITestCase):
+    def setUp(self):
+        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
+        self.client.force_authenticate(user=admin)
+        self.finalized = ContractState.objects.create(state='finalized')
+        self.region_lima = Region.objects.create(name='Lima')
+        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
+        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
+        self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
+        self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
+                                                      phone='995995408', type='Musician', user=self.mario,
+                                                      district=self.los_olivos)
+        self.cesar_organizer = Organizer.objects.create(first_name='cesar', last_name='ramirez',
+                                                        birth_date='21/03/1996',
+                                                        phone='927528321', type='Organizer', user=self.cesar,
+                                                        district=self.los_olivos)
+        self.contract_one = Contract.objects.create(name='contract one', address='tokyo', reference='chiba',
+                                                    start_date='7/10/2020', end_date='8/10/2020',
+                                                    district=self.los_olivos, organizer=self.cesar_organizer,
+                                                    musician=self.mario_musician, contract_state=self.finalized)
+        self.contract_two = Contract.objects.create(name='contract two', address='naples', reference='roma',
+                                                    start_date='9/10/2020', end_date='10/10/2020',
+                                                    district=self.los_olivos, organizer=self.cesar_organizer,
+                                                    musician=self.mario_musician, contract_state=self.finalized)
+        self.qualification = Qualification.objects.create(text='Hi, your very talented', score=4.4,
+                                                          contract=self.contract_one)
+        self.valid_qualification = {
+            'text': 'Hi, test',
+            'score': 3.8,
+        }
+        self.invalid_qualification = {
+            'text': '',
+            'score': 3.8,
+        }
+
+    def test_get_all_qualifications_by_musician(self):
+        response = self.client.get(reverse('list_qualifications_by_musician',
+                                           kwargs={'musician_id': self.mario_musician.id}))
+        qualifications = Qualification.objects\
+            .filter(contract__in=Contract.objects.filter(musician__id=self.mario_musician.id))
+        serializer = QualificationSerializer(qualifications, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_valid_single_qualification(self):
+        response = self.client.get(reverse('qualification_detail',
+                                           kwargs={'qualification_id': self.qualification.id}))
+        qualification = Qualification.objects.get(id=self.qualification.id)
+        serializer = QualificationSerializer(qualification)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_invalid_single_qualification(self):
+        response = self.client.get(reverse('qualification_detail', kwargs={'qualification_id': 50}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_valid_qualification(self):
+        response = self.client.post(
+            reverse('create_qualifications', kwargs={'contract_id': self.contract_two.id}),
+            data=json.dumps(self.valid_qualification),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_qualification(self):
+        response = self.client.post(
+            reverse('create_qualifications', kwargs={'contract_id': self.contract_two.id}),
+            data=json.dumps(self.invalid_qualification),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_valid_qualification(self):
+        response = self.client.put(
+            reverse('qualification_detail', kwargs={'qualification_id': self.qualification.id}),
+            data=json.dumps(self.valid_qualification),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_invalid_qualification(self):
+        response = self.client.put(
+            reverse('qualification_detail', kwargs={'qualification_id': self.qualification.id}),
+            data=json.dumps(self.invalid_qualification),
+            content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_valid_qualification(self):
+        response = self.client.delete(
+            reverse('qualification_detail', kwargs={'qualification_id': self.qualification.id}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_invalid_qualification(self):
+        response = self.client.delete(
+            reverse('qualification_detail', kwargs={'qualification_id': 20}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
