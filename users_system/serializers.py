@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Profile, Musician, Organizer
+from locations.models import District
+from datetime import date
 from django.contrib.auth.hashers import make_password
 
 
@@ -26,3 +28,41 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
         }
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    district_id = serializers.IntegerField(write_only=True)
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    district_name = serializers.CharField(source='district.name', read_only=True)
+
+    def create(self, validated_data):
+        user = User.objects.get(id=validated_data["user_id"])
+        validated_data["user"] = user
+        district = District.objects.get(id=validated_data["district_id"])
+        validated_data["district"] = district
+        validated_data["register_date"] = str(date.today())
+        typeProfile = validated_data["type"]
+        profile = None
+        if typeProfile == "Musician":
+            profile = Musician.objects.create(**validated_data)
+        elif typeProfile == "Organizer":
+            profile = Organizer.objects.create(**validated_data)
+        return profile
+
+    class Meta:
+        model = Profile
+        fields = ('id', 'first_name', 'last_name', 'birth_date', 'phone',
+                'type', 'register_date', 'user_email', 'district_name', 'district_id')
+        read_only_fields = ('register_date',)
+
+
+class MusicianSerializer(ProfileSerializer):
+    class Meta:
+        model = Musician
+        fields = ProfileSerializer.Meta.fields + ('rating', 'artistic_name')
+
+
+class OrganizerSerializer(ProfileSerializer):
+    class Meta:
+        model = Organizer
+        fields = ProfileSerializer.Meta.fields
