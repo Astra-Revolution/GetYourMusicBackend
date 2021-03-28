@@ -6,8 +6,8 @@ from rest_framework import status
 
 from locations.models import Region, Province, District
 from users_system.models import User, Profile, Musician
-from .models import Publication, Comment
-from .serializers import PublicationSerializer, CommentSerializer
+from .models import Publication, Comment, Notification
+from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer
 
 
 class PublicationTest(APITestCase):
@@ -195,3 +195,28 @@ class CommentTest(APITestCase):
         response = self.client.delete(reverse('comment_detail',
                                               kwargs={'comment_id': 50}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class NotificationTest(APITestCase):
+    def setUp(self):
+        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
+        self.client.force_authenticate(user=admin)
+        self.region_lima = Region.objects.create(name='Lima')
+        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
+        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
+        self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
+        self.mario_profile = Profile.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
+                                                    phone='995995408', type='Musician', user=self.mario,
+                                                    district=self.los_olivos)
+        self.cesar_profile = Profile.objects.create(first_name='cesar', last_name='ramirez', birth_date='21/03/1996',
+                                                    phone='927528321', type='Organizer', user=self.cesar,
+                                                    district=self.los_olivos)
+
+    def test_get_all_notifications_by_profile(self):
+        response = self.client.get(reverse('list_notification_by_profile',
+                                           kwargs={'profile_id': self.mario_profile.id}))
+        notifications = Notification.objects.filter(profile__id=self.mario_profile.id)
+        serializer = NotificationSerializer(notifications, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
