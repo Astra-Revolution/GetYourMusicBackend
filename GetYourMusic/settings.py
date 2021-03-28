@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users_system.apps.UsersSystemConfig',
     'locations.apps.LocationsConfig',
+    'media_system.apps.MediaSystemConfig',
     'rest_framework',
     'rest_framework_swagger',
     'drf_yasg',
@@ -90,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'get_your_music',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'M0rtalkombat',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

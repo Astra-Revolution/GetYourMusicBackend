@@ -37,4 +37,6 @@ urlpatterns = [
          name='schema-swagger-ui'),  # <-- Here
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include('users_system.urls')),
+    path('api/', include('locations.urls')),
+    path('api/', include('media_system.urls')),
 ]
