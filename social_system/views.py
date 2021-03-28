@@ -1,18 +1,17 @@
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import *
-from .serializers import PublicationSerializer, CommentSerializer
-from .models import Publication, Comment
+from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer
+from .models import Publication, Comment, Notification
 from users_system.models import Profile, Musician
-
 
 publications_response = openapi.Response('publications description', PublicationSerializer(many=True))
 publication_response = openapi.Response('publication description', PublicationSerializer)
 comments_response = openapi.Response('comments description', CommentSerializer(many=True))
 comment_response = openapi.Response('comment description', CommentSerializer)
+notifications_response = openapi.Response('notifications description', NotificationSerializer(many=True))
 
 
 @swagger_auto_schema(method='get', responses={200: publications_response})
@@ -128,3 +127,13 @@ def comment_detail(request, comment_id):
     elif request.method == 'DELETE':
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@swagger_auto_schema(method='get', responses={200: notifications_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_notification_by_profile(request, profile_id):
+    if request.method == 'GET':
+        notifications = Notification.objects.filter(profile__id=profile_id)
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)

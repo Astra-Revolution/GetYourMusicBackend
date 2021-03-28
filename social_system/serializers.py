@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from datetime import date
-from .models import Publication, Comment
+from .models import Publication, Comment, Notification
 from users_system.models import Profile, Musician
 
 
@@ -35,3 +35,11 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'commenter_name', 'content')
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    profile_name = serializers.CharField(source='profile.first_name', read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = ('id', 'message', 'profile_name')

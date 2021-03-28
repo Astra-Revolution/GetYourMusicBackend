@@ -25,3 +25,14 @@ class Comment(models.Model):
 
     class Meta:
         db_table = 'comments'
+
+
+class Notification(models.Model):
+    message = models.CharField(max_length=120)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+    def str(self):
+        return self.message
+
+    class Meta:
+        db_table = 'notifications'
