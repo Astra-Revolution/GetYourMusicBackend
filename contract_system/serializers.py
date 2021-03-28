@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContractState, Contract
+from .models import ContractState, Contract, Qualification
 from users_system.models import Organizer, Musician
 from locations.models import District
 
@@ -34,3 +34,17 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'address', 'reference',
                   'start_date', 'end_date', 'district_name', 'organizer_name',
                   'musician_name', 'state', 'district_id')
+
+
+class QualificationSerializer(serializers.ModelSerializer):
+    contract_name = serializers.CharField(source='contract.name', read_only=True)
+
+    def create(self, validated_data):
+        contract = Contract.objects.get(id=validated_data["contract_id"])
+        validated_data["contract"] = contract
+        qualification = Qualification.objects.create(**validated_data)
+        return qualification
+
+    class Meta:
+        model = Qualification
+        fields = ('id', 'text', 'score', 'contract_name')

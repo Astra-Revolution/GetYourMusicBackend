@@ -42,7 +42,7 @@ class Profile(models.Model):
 
 class Musician(Profile):
     musicians = models.OneToOneField(Profile, auto_created=True, on_delete=models.CASCADE, parent_link=True,
-                                    primary_key=True, serialize=False)
+                                     primary_key=True, serialize=False)
     artistic_name = models.CharField(max_length=100, null=True)
     rating = models.FloatField(default=0)
     genres = models.ManyToManyField(Genre, related_name='musicians')
@@ -57,10 +57,19 @@ class Musician(Profile):
 
 class Organizer(Profile):
     organizers = models.OneToOneField(Profile, auto_created=True, on_delete=models.CASCADE, parent_link=True,
-                                    primary_key=True, serialize=False)
+                                      primary_key=True, serialize=False)
 
     def __str__(self):
         return self.first_name
 
     class Meta:
         db_table = 'organizers'
+
+
+class Following(models.Model):
+    follower = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    followed = models.ForeignKey(Musician, on_delete=models.CASCADE, related_name='followed')
+    follow_date = models.CharField(max_length=60)
+
+    class Meta:
+        db_table = 'following'

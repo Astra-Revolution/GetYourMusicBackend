@@ -9,8 +9,8 @@ from rest_framework.views import *
 
 from media_system.models import Genre, Instrument
 from media_system.serializers import GenreSerializer, InstrumentSerializer
-from .serializers import UserSerializer, ProfileSerializer, MusicianSerializer, OrganizerSerializer
-from .models import User, Profile, Musician, Organizer
+from .serializers import UserSerializer, ProfileSerializer, MusicianSerializer, OrganizerSerializer, FollowingSerializer
+from .models import User, Profile, Musician, Organizer, Following
 
 users_response = openapi.Response('users description', UserSerializer(many=True))
 user_response = openapi.Response('user description', UserSerializer)
@@ -209,4 +209,50 @@ def musicians_instruments(request, musician_id, instrument_id):
     if request.method == 'DELETE':
         musician.instruments.remove(instrument)
         musician.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@swagger_auto_schema(method='get', responses={200: musicians_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_followed_by_follower(request, follower_id):
+    if request.method == 'GET':
+        followed = Following.objects.filter(followerid=follower_id)
+        serializer = FollowingSerializer(followed, many=True)
+        return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: musicians_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_follower_by_followed(request, followed_id):
+    if request.method == 'GET':
+        follower = Following.objects.filter(followedid=followed_id)
+        serializer = FollowingSerializer(follower, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def create_delete_following(request, follower_id, followed_id):
+    try:
+        Musician.objects.get(id=follower_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    try:
+        Musician.objects.get(id=followed_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    if request.method == 'POST':
+        serializer = FollowingSerializer(data={})
+        if serializer.is_valid():
+            serializer.save(follower_id=follower_id, followed_id=followed_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        following = Following.objects.get(followerid=follower_id, followedid=followed_id)
+        following.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

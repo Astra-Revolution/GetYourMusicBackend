@@ -29,3 +29,12 @@ class Contract(models.Model):
 
     class Meta:
         db_table = 'contracts'
+
+
+class Qualification(models.Model):
+    text = models.CharField(max_length=60)
+    score = models.FloatField()
+    contract = models.OneToOneField(Contract, on_delete=models.CASCADE, related_name="qualification")
+
+    class Meta:
+        db_table = 'qualifications'
