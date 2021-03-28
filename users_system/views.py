@@ -263,21 +263,28 @@ def create_delete_following(request, follower_id, followed_id):
 def musician_filter(request):
     if request.method == 'POST':
         filters = {
-            'district': request.data['district'],
-            'name': request.data['name'],
-            'genre': request.data['genre'],
-            'instrument': request.data['instrument']
+            'district': verify_field(request.data['district']),
+            'name': verify_field(request.data['name']),
+            'genre': verify_field(request.data['genre']),
+            'instrument': verify_field(request.data['instrument'])
         }
         musicians = Musician.objects.raw('''
-        select first_name, last_name, phone
+        select *
         from musicians m
         inner join profiles p on m.musicians_id = p.id
         inner join districts d on p.district_id = d.id
         inner join musicians_genres mg on m.musicians_id=mg.musician_id
         inner join musicians_instruments mi on m.musicians_id=mi.musician_id
-        where p.district_id=if(p.district_id=%(district), p.district_id, %(district)) 
-        and p.first_name like if(p.first_name=%(name), p.first_name, %(name))
-        and mg.genre_id=if(mg.genre_id=%(genre), mg.genre_id, %(genre))
-        and mi.instrument_id=if(mi.instrument_id=%(instrument)), mi.instrument_id, %(instrument) ''', filters)
+        where p.district_id=if(p.district_id=%(district)s, p.district_id, %(district)s) 
+        and p.first_name like if(p.first_name=%(name)s, p.first_name, %(name)s)
+        and mg.genre_id=if(mg.genre_id=%(genre)s, mg.genre_id, %(genre)s)
+        and mi.instrument_id=if(mi.instrument_id=%(instrument)s, mi.instrument_id, %(instrument)s) ''', filters)
         serializer = MusicianSerializer(musicians, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+def verify_field(field):
+    if field is not None:
+        return field
+    else:
+        return None

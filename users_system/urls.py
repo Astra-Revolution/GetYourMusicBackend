@@ -3,7 +3,7 @@ from django.urls import path
 from .views import register, user_detail, forgot_password, reset_password, \
     profiles_list, create_profiles, profiles_detail, musicians_list, organizers_list, \
     musicians_genres, musicians_instruments, list_followed_by_follower, list_follower_by_followed, \
-    create_delete_following
+    create_delete_following, musician_filter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -20,6 +20,7 @@ urlpatterns = [
     path('users/<int:user_id>/profiles/', create_profiles, name='create_profiles'),
     path('profiles/<int:profile_id>/', profiles_detail, name='profile_detail'),
     path('musicians/', musicians_list, name='musicians_list'),
+    path('musicians-filter/', musician_filter, name='musician_filter'),
     path('organizers/', organizers_list, name='organizers_list'),
     path('musicians/<int:musician_id>/genres/<genre_id>/', musicians_genres, name='musicians_genres'),
     path('musicians/<int:musician_id>/instruments/<instrument_id>/', musicians_instruments,
