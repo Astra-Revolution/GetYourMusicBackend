@@ -21,6 +21,21 @@ def genres_list(request):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(method='get', responses={200: genres_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_genres_by_musician(request, musician_id):
+    if request.method == 'GET':
+        try:
+            Musician.objects.get(id=musician_id)
+        except Musician.DoesNotExist:
+            raise Http404
+
+        musician_genres = Genre.objects.filter(musicians__id=musician_id)
+        serializer = GenreSerializer(musician_genres, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @swagger_auto_schema(method='get', responses={200: instruments_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -29,3 +44,18 @@ def instruments_list(request):
         instrument = Instrument.objects.all()
         serializer = InstrumentSerializer(instrument, many=True)
         return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: instruments_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_instruments_by_musician(request, musician_id):
+    if request.method == 'GET':
+        try:
+            Musician.objects.get(id=musician_id)
+        except Musician.DoesNotExist:
+            raise Http404
+
+        musician_instruments = Instrument.objects.filter(musicians__id=musician_id)
+        serializer = InstrumentSerializer(musician_instruments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
