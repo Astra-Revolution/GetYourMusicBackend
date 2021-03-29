@@ -262,29 +262,48 @@ def create_delete_following(request, follower_id, followed_id):
 @permission_classes([IsAuthenticated])
 def musician_filter(request):
     if request.method == 'POST':
-        filters = {
-            'district': verify_field(request.data['district']),
-            'name': verify_field(request.data['name']),
-            'genre': verify_field(request.data['genre']),
-            'instrument': verify_field(request.data['instrument'])
-        }
-        musicians = Musician.objects.raw('''
-        select *
+        filters = verify_field(request.data)
+        query = '''select *
         from musicians m
         inner join profiles p on m.musicians_id = p.id
         inner join districts d on p.district_id = d.id
-        inner join musicians_genres mg on m.musicians_id=mg.musician_id
-        inner join musicians_instruments mi on m.musicians_id=mi.musician_id
-        where p.district_id=if(p.district_id=%(district)s, p.district_id, %(district)s) 
-        and p.first_name like if(p.first_name=%(name)s, p.first_name, %(name)s)
-        and mg.genre_id=if(mg.genre_id=%(genre)s, mg.genre_id, %(genre)s)
-        and mi.instrument_id=if(mi.instrument_id=%(instrument)s, mi.instrument_id, %(instrument)s) ''', filters)
+        left join musicians_genres mg on m.musicians_id=mg.musician_id
+        left join musicians_instruments mi on m.musicians_id=mi.musician_id
+        where 1 = 1'''
+        if filters.get('district'):
+            query += ' and p.district_id = %(district)s'
+        if filters.get('name'):
+            query += ' and p.first_name like %(name)s'
+        if filters.get('genre'):
+            query += ' and mg.genre_id = %(genre)s'
+        if filters.get('instrument'):
+            query += ' and mi.instrument_id = %(instrument)s'
+        musicians = Musician.objects.raw(query, filters)
         serializer = MusicianSerializer(musicians, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def verify_field(field):
-    if field is not None:
-        return field
-    else:
-        return None
+def verify_field(data):
+    try:
+        district = data['district']
+    except:
+        district = None
+    try:
+        genre = data['genre']
+    except:
+        genre = None
+    try:
+        instrument = data['instrument']
+    except:
+        instrument = None
+    try:
+        name = data['name']
+    except:
+        name = None
+    filters = {
+        'district': district,
+        'name': name,
+        'genre': genre,
+        'instrument': instrument
+    }
+    return filters
