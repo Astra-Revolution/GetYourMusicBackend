@@ -1,5 +1,7 @@
 from django.db import models
-from users_system.models import Profile, Musician
+
+from social_system.utils import validated_message_content
+from users_system.models import Profile, Musician, User
 
 
 class Publication(models.Model):
@@ -36,3 +38,28 @@ class Notification(models.Model):
 
     class Meta:
         db_table = 'notifications'
+
+
+class Chat(models.Model):
+    sender = models.ForeignKey(User, related_name='sender_id', null=False, on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='receiver_id', null=False, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'chats'
+
+
+class Message(models.Model):
+    author = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    content = models.TextField(validators=[validated_message_content])
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+
+    @staticmethod
+    def last_50_message():
+        return Message.objects.order_by('-created_at').all()[:50]
+
+    class Meta:
+        db_table = 'messages'
+
+
+

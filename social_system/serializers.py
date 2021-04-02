@@ -4,6 +4,7 @@ from .models import Publication, Comment, Notification
 from users_system.models import Profile, Musician
 import social_system.notifier
 
+
 class PublicationSerializer(serializers.ModelSerializer):
     musician_name = serializers.CharField(source='musician.first_name', read_only=True)
 
