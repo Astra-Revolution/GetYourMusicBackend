@@ -55,8 +55,9 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
 
     @staticmethod
-    def last_50_message():
-        return Message.objects.order_by('-created_at').all()[:50]
+    def last_50_message(room_id):
+        chat = Chat.objects.get(id=room_id)
+        return Message.objects.order_by('-created_at').filter(chat=chat)[:50]
 
     class Meta:
         db_table = 'messages'

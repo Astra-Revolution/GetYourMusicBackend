@@ -27,13 +27,15 @@ class ChatConsumer(WebsocketConsumer):
             content['error'] = 'Unable to get or create User with username: ' + username
             self.send_message(content)
         content['success'] = 'Chatting in with success with username: ' + username
+        content['room_id'] = room_id
         self.send_message(content)
 
     def fetch_messages(self, data):
-        messages = Message.last_50_message()
+        messages = Message.last_50_message(data['room'])
         content = {
             'command': 'message',
             'messages': self.messages_to_json(messages),
+            'room_id': data['room']
         }
         self.send_message(content)
 
@@ -48,7 +50,8 @@ class ChatConsumer(WebsocketConsumer):
         message = Message.objects.create(author=author_user, content=text, chat=room)
         content = {
             'command': 'new_message',
-            'message': self.message_to_json(message)
+            'message': self.message_to_json(message),
+            'room_id': room_id
         }
         self.send_chat_message(content)
 
