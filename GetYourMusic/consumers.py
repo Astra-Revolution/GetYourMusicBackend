@@ -6,7 +6,7 @@ from requests import Response
 from rest_framework import status
 
 from social_system.models import Message, Chat
-from users_system.models import User
+from users_system.models import Profile, User
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -14,16 +14,17 @@ class ChatConsumer(WebsocketConsumer):
     def init_chat(self, data):
         username = data['username']
         room_id = data['room_id']
-        user = User.objects.get(email=username)
+        # user = User.objects.get(email=username)
+        profile = Profile.objects.get(user__email=username)
         room = Chat.objects.filter(id=room_id)
 
-        if not user or not room:
+        if not profile or not room:
             raise Exception("User or Room don't founded", status.HTTP_404_NOT_FOUND)
 
         content = {
             'command': 'init_chat'
         }
-        if not user:
+        if not profile:
             content['error'] = 'Unable to get or create User with username: ' + username
             self.send_message(content)
         content['success'] = 'Chatting in with success with username: ' + username
@@ -43,11 +44,12 @@ class ChatConsumer(WebsocketConsumer):
         author = data['from']
         text = data['text']
         room_id = data['room']
-        author_user, created = User.objects.get_or_create(email=author)
+        # user = User.objects.get(email=author)
+        author_profile, created = Profile.objects.get(user__email=author)
         room = Chat.objects.get(id=room_id)
         if not room:
             raise Exception('Room did not founded', status.HTTP_404_NOT_FOUND)
-        message = Message.objects.create(author=author_user, content=text, chat=room)
+        message = Message.objects.create(author=author_profile, content=text, chat=room)
         content = {
             'command': 'new_message',
             'message': self.message_to_json(message),
@@ -67,7 +69,7 @@ class ChatConsumer(WebsocketConsumer):
 
         return {
             'id': str(message.id),
-            'author': message.author.email,
+            'author': message.author.user.email,
             'content': message.content,
             'created_at': str(message.created_at),
             'room_id': str(message.chat.id)
