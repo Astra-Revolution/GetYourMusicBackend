@@ -31,7 +31,8 @@ SECRET_KEY = '_vy#^5dkw0otdow3#hl)ymdwxu3&=t%=0(2$2(owk@dfion1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10'
+                 '.0.2.2', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -99,11 +100,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'get_your_music',
         'USER': 'root',
-        'PASSWORD': 'password',
+        'PASSWORD': 'pacheco98',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
