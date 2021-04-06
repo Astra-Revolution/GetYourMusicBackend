@@ -1,6 +1,6 @@
 import jwt
 
-from users_system.util import generate_token, send_email
+from users_system.util import generate_token, send_email, verify_field
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view, permission_classes
@@ -131,7 +131,7 @@ def profiles_detail(request, profile_id):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ProfileSerializer(profile, data=request.data)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -282,28 +282,3 @@ def musician_filter(request):
         serializer = MusicianSerializer(musicians, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-def verify_field(data):
-    try:
-        district = data['district']
-    except:
-        district = None
-    try:
-        genre = data['genre']
-    except:
-        genre = None
-    try:
-        instrument = data['instrument']
-    except:
-        instrument = None
-    try:
-        name = data['name']
-    except:
-        name = None
-    filters = {
-        'district': district,
-        'name': name,
-        'genre': genre,
-        'instrument': instrument
-    }
-    return filters
