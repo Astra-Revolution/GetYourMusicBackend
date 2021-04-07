@@ -41,7 +41,7 @@ def contract_list(request):
 @permission_classes([IsAuthenticated])
 def list_contracts_by_organizer(request, organizer_id):
     if request.method == 'GET':
-        contracts = Contract.objects.filter(organizer__id=organizer_id)
+        contracts = Contract.objects.filter(organizer__user=organizer_id)
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data)
 
@@ -51,7 +51,7 @@ def list_contracts_by_organizer(request, organizer_id):
 @permission_classes([IsAuthenticated])
 def list_contracts_by_musician(request, musician_id):
     if request.method == 'GET':
-        contracts = Contract.objects.filter(musician__id=musician_id)
+        contracts = Contract.objects.filter(musician__user=musician_id)
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data)
 
@@ -62,12 +62,12 @@ def list_contracts_by_musician(request, musician_id):
 def create_contracts(request, organizer_id, musician_id):
     if request.method == 'POST':
         try:
-            Organizer.objects.get(id=organizer_id)
+            Organizer.objects.get(user=organizer_id)
         except Organizer.DoesNotExist:
             raise Http404
 
         try:
-            Musician.objects.get(id=musician_id)
+            Musician.objects.get(user=musician_id)
         except Musician.DoesNotExist:
             raise Http404
 
@@ -136,7 +136,7 @@ def list_qualifications_by_musician(request, musician_id):
         # contracts = Contract.objects.filter(musician__id=musician_id)
         # qualifications = Qualification.objects.filter(contract__in=contracts)
         qualifications = Qualification.objects\
-            .filter(contract__in=Contract.objects.filter(musician__id=musician_id))
+            .filter(contract__in=Contract.objects.filter(musician__user=musician_id))
         serializer = QualificationSerializer(qualifications, many=True)
         return Response(serializer.data)
 

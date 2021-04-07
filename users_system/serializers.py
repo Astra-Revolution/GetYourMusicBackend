@@ -52,9 +52,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'first_name', 'last_name', 'birth_date', 'phone',
+        fields = ('user', 'first_name', 'last_name', 'birth_date', 'phone',
                   'type', 'register_date', 'user_email', 'district_name', 'district_id')
-        read_only_fields = ('register_date',)
+        read_only_fields = ('register_date', 'user')
 
 
 class MusicianSerializer(ProfileSerializer):
@@ -74,9 +74,9 @@ class FollowingSerializer(serializers.ModelSerializer):
     followed_name = serializers.CharField(source='followed.first_name', read_only=True)
 
     def create(self, validated_data):
-        follower = Musician.objects.get(id=validated_data["follower_id"])
+        follower = Musician.objects.get(user=validated_data["follower_id"])
         validated_data["follower"] = follower
-        followed = Musician.objects.get(id=validated_data["followed_id"])
+        followed = Musician.objects.get(user=validated_data["followed_id"])
         validated_data["followed"] = followed
         validated_data["follow_date"] = str(date.today())
         following = Following.objects.create(**validated_data)

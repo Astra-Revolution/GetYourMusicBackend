@@ -38,8 +38,8 @@ class GenreTest(APITestCase):
 
     def test_get_all_genres_by_musician(self):
         response = self.client.get(reverse('list_genres_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.id}))
-        musician_genres = Genre.objects.filter(musicians__id=self.mario_musician.id)
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        musician_genres = Genre.objects.filter(musicians__user=self.mario_musician.user.id)
         serializer = GenreSerializer(musician_genres, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -78,8 +78,8 @@ class InstrumentTest(APITestCase):
 
     def test_get_all_instruments_by_musician(self):
         response = self.client.get(reverse('list_instruments_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.id}))
-        musician_instruments = Instrument.objects.filter(musicians__id=self.mario_musician.id)
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        musician_instruments = Instrument.objects.filter(musicians__user=self.mario_musician.user.id)
         serializer = InstrumentSerializer(musician_instruments, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

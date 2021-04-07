@@ -43,8 +43,8 @@ class PublicationTest(APITestCase):
 
     def test_get_all_publications_by_musicians(self):
         response = self.client.get(reverse('musician_publications',
-                                           kwargs={'musician_id': self.mario_musician.id}))
-        publications = Publication.objects.filter(musician__id=self.mario_musician.id)
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        publications = Publication.objects.filter(musician__user=self.mario_musician.user.id)
         serializer = PublicationSerializer(publications, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -64,7 +64,7 @@ class PublicationTest(APITestCase):
 
     def test_create_valid_publication(self):
         response = self.client.post(
-            reverse('musician_publications', kwargs={'musician_id': self.mario_musician.id}),
+            reverse('musician_publications', kwargs={'musician_id': self.mario_musician.user.id}),
             data=json.dumps(self.valid_publication),
             content_type='application/json'
         )
@@ -72,7 +72,7 @@ class PublicationTest(APITestCase):
 
     def test_create_invalid_publication(self):
         response = self.client.post(
-            reverse('musician_publications', kwargs={'musician_id': self.mario_musician.id}),
+            reverse('musician_publications', kwargs={'musician_id': self.mario_musician.user.id}),
             data=json.dumps(self.invalid_publication),
             content_type='application/json'
         )
@@ -156,7 +156,7 @@ class CommentTest(APITestCase):
     def test_create_valid_comment(self):
         response = self.client.post(
             reverse('create_comments', kwargs={'publication_id': self.publication_one.id,
-                                               'commenter_id': self.noli_profile.id}),
+                                               'commenter_id': self.noli_profile.user.id}),
             data=json.dumps(self.valid_comment),
             content_type='application/json'
         )
@@ -165,7 +165,7 @@ class CommentTest(APITestCase):
     def test_create_invalid_comment(self):
         response = self.client.post(
             reverse('create_comments', kwargs={'publication_id': self.publication_one.id,
-                                               'commenter_id': self.noli_profile.id}),
+                                               'commenter_id': self.noli_profile.user.id}),
             data=json.dumps(self.invalid_comment),
             content_type='application/json'
         )
@@ -215,8 +215,8 @@ class NotificationTest(APITestCase):
 
     def test_get_all_notifications_by_profile(self):
         response = self.client.get(reverse('list_notification_by_profile',
-                                           kwargs={'profile_id': self.mario_profile.id}))
-        notifications = Notification.objects.filter(profile__id=self.mario_profile.id)
+                                           kwargs={'profile_id': self.mario_profile.user.id}))
+        notifications = Notification.objects.filter(profile__user=self.mario_profile.user.id)
         serializer = NotificationSerializer(notifications, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -9,7 +9,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     musician_name = serializers.CharField(source='musician.first_name', read_only=True)
 
     def create(self, validated_data):
-        musician = Musician.objects.get(id=validated_data["musician_id"])
+        musician = Musician.objects.get(user=validated_data["musician_id"])
         validated_data["musician"] = musician
         validated_data["update_time"] = str(date.today())
         publication = Publication.objects.create(**validated_data)
@@ -26,7 +26,7 @@ class CommentSerializer(serializers.ModelSerializer):
     content = serializers.CharField(source='publication.content', read_only=True)
 
     def create(self, validated_data):
-        commenter = Profile.objects.get(id=validated_data["commenter_id"])
+        commenter = Profile.objects.get(user=validated_data["commenter_id"])
         validated_data["commenter"] = commenter
         publication = Publication.objects.get(id=validated_data["publication_id"])
         validated_data["publication"] = publication

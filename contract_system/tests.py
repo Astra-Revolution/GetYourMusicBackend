@@ -80,16 +80,16 @@ class ContractTest(APITestCase):
 
     def test_get_all_contracts_by_organizer(self):
         response = self.client.get(reverse('list_contracts_by_organizer',
-                                           kwargs={'organizer_id': self.cesar_organizer.id}))
-        contracts = Contract.objects.filter(organizer__id=self.cesar_organizer.id)
+                                           kwargs={'organizer_id': self.cesar_organizer.user.id}))
+        contracts = Contract.objects.filter(organizer__user=self.cesar_organizer.user.id)
         serializer = ContractSerializer(contracts, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_contracts_by_musician(self):
         response = self.client.get(reverse('list_contracts_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.id}))
-        contracts = Contract.objects.filter(musician__id=self.mario_musician.id)
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        contracts = Contract.objects.filter(musician__user=self.mario_musician.user.id)
         serializer = ContractSerializer(contracts, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -107,8 +107,8 @@ class ContractTest(APITestCase):
 
     def test_create_valid_contract(self):
         response = self.client.post(
-            reverse('create_contracts', kwargs={'organizer_id': self.cesar_organizer.id,
-                                                'musician_id': self.mario_musician.id}),
+            reverse('create_contracts', kwargs={'organizer_id': self.cesar_organizer.user.id,
+                                                'musician_id': self.mario_musician.user.id}),
             data=json.dumps(self.valid_contract),
             content_type='application/json'
         )
@@ -116,8 +116,8 @@ class ContractTest(APITestCase):
 
     def test_create_invalid_contract(self):
         response = self.client.post(
-            reverse('create_contracts', kwargs={'organizer_id': self.cesar_organizer.id,
-                                                'musician_id': self.mario_musician.id}),
+            reverse('create_contracts', kwargs={'organizer_id': self.cesar_organizer.user.id,
+                                                'musician_id': self.mario_musician.user.id}),
             data=json.dumps(self.invalid_contract),
             content_type='application/json'
         )
@@ -199,9 +199,9 @@ class QualificationTest(APITestCase):
 
     def test_get_all_qualifications_by_musician(self):
         response = self.client.get(reverse('list_qualifications_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.id}))
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
         qualifications = Qualification.objects\
-            .filter(contract__in=Contract.objects.filter(musician__id=self.mario_musician.id))
+            .filter(contract__in=Contract.objects.filter(musician__user=self.mario_musician.user.id))
         serializer = QualificationSerializer(qualifications, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

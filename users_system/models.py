@@ -24,13 +24,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
+    user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE, serialize=False)
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60, null=True)
     birth_date = models.CharField(max_length=60, null=True)
     phone = models.CharField(max_length=60, null=True)
     type = models.CharField(max_length=60, null=True)
     register_date = models.CharField(max_length=60, null=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
 
     def __str__(self):

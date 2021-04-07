@@ -121,8 +121,8 @@ class ProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_valid_single_profile(self):
-        response = self.client.get(reverse('profile_detail', kwargs={'profile_id': self.mario_profile.id}))
-        profile = Profile.objects.get(id=self.mario_profile.id)
+        response = self.client.get(reverse('profile_detail', kwargs={'profile_id': self.mario_profile.user.id}))
+        profile = Profile.objects.get(user=self.mario_profile.user.id)
         serializer = ProfileSerializer(profile)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -149,7 +149,7 @@ class ProfileTest(APITestCase):
 
     def test_update_valid_profile(self):
         response = self.client.put(
-            reverse('profile_detail', kwargs={'profile_id': self.mario_profile.id}),
+            reverse('profile_detail', kwargs={'profile_id': self.mario_profile.user.id}),
             data=json.dumps(self.valid_profile),
             content_type='application/json'
         )
@@ -157,7 +157,7 @@ class ProfileTest(APITestCase):
 
     def test_update_invalid_profile(self):
         response = self.client.put(
-            reverse('profile_detail', kwargs={'profile_id': self.mario_profile.id}),
+            reverse('profile_detail', kwargs={'profile_id': self.mario_profile.user.id}),
             data=json.dumps(self.invalid_profile),
             content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -211,49 +211,49 @@ class MusicianTest(APITestCase):
 
     def test_create_valid_musicians_genres(self):
         response = self.client.post(
-            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.id,
+            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
                                                 'genre_id': self.pop.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_invalid_musicians_genres(self):
         response = self.client.post(
-            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.id,
+            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
                                                 'genre_id': 50}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_valid_musicians_genres(self):
         response = self.client.delete(
-            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.id,
+            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
                                                 'genre_id': self.pop.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_invalid_musicians_genres(self):
         response = self.client.delete(
-            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.id,
+            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
                                                 'genre_id': 50}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_valid_musicians_instruments(self):
         response = self.client.post(
-            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.id,
+            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
                                                      'instrument_id': self.ukulele.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_invalid_musicians_instruments(self):
         response = self.client.post(
-            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.id,
+            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
                                                      'instrument_id': 50}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_valid_musicians_instruments(self):
         response = self.client.delete(
-            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.id,
+            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
                                                      'instrument_id': self.ukulele.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_invalid_musicians_instruments(self):
         response = self.client.delete(
-            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.id,
+            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
                                                      'instrument_id': 50}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -285,40 +285,40 @@ class FollowingTest(APITestCase):
 
     def test_get_all_followed_by_follower(self):
         response = self.client.get(reverse('list_followed_by_follower',
-                                           kwargs={'follower_id': self.mario_musician.id}))
-        followed = Following.objects.filter(follower__id=self.mario_musician.id)
+                                           kwargs={'follower_id': self.mario_musician.user.id}))
+        followed = Following.objects.filter(follower_id=self.mario_musician.user.id)
         serializer = FollowingSerializer(followed, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_follower_by_followed(self):
         response = self.client.get(reverse('list_follower_by_followed',
-                                           kwargs={'followed_id': self.mario_musician.id}))
-        followers = Following.objects.filter(followed__id=self.mario_musician.id)
+                                           kwargs={'followed_id': self.mario_musician.user.id}))
+        followers = Following.objects.filter(followed_id=self.mario_musician.user.id)
         serializer = FollowingSerializer(followers, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_valid_following(self):
         response = self.client.post(
-            reverse('create_delete_following', kwargs={'follower_id': self.cesar_musician.id,
-                                                       'followed_id': self.rodrigo_musician.id}))
+            reverse('create_delete_following', kwargs={'follower_id': self.cesar_musician.user.id,
+                                                       'followed_id': self.rodrigo_musician.user.id}))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_invalid_following(self):
         response = self.client.post(
-            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.id,
+            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.user.id,
                                                        'followed_id': 80}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_valid_following(self):
         response = self.client.delete(
-            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.id,
-                                                       'followed_id': self.cesar_musician.id}))
+            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.user.id,
+                                                       'followed_id': self.cesar_musician.user.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_invalid_following(self):
         response = self.client.delete(
-            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.id,
+            reverse('create_delete_following', kwargs={'follower_id': self.mario_musician.user.id,
                                                        'followed_id': 200}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

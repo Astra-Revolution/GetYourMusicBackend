@@ -30,12 +30,12 @@ def publication_list(request):
 @permission_classes([IsAuthenticated])
 def musician_publications(request, musician_id):
     if request.method == 'GET':
-        publications = Publication.objects.filter(musician__id=musician_id)
+        publications = Publication.objects.filter(musician__user=musician_id)
         serializer = PublicationSerializer(publications, many=True)
         return Response(serializer.data)
     if request.method == 'POST':
         try:
-            Musician.objects.get(id=musician_id)
+            Musician.objects.get(user=musician_id)
         except Musician.DoesNotExist:
             raise Http404
 
@@ -92,7 +92,7 @@ def create_comments(request, publication_id, commenter_id):
         except Publication.DoesNotExist:
             raise Http404
         try:
-            Profile.objects.get(id=commenter_id)
+            Profile.objects.get(user=commenter_id)
         except Profile.DoesNotExist:
             raise Http404
 
@@ -134,6 +134,6 @@ def comment_detail(request, comment_id):
 @permission_classes([IsAuthenticated])
 def list_notification_by_profile(request, profile_id):
     if request.method == 'GET':
-        notifications = Notification.objects.filter(profile__id=profile_id)
+        notifications = Notification.objects.filter(profile__user=profile_id)
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)

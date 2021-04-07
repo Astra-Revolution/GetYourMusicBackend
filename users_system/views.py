@@ -122,7 +122,7 @@ def create_profiles(request, user_id):
 @permission_classes([IsAuthenticated])
 def profiles_detail(request, profile_id):
     try:
-        profile = Profile.objects.get(id=profile_id)
+        profile = Profile.objects.get(user=profile_id)
     except Profile.DoesNotExist:
         raise Http404
 
@@ -166,7 +166,7 @@ def organizers_list(request):
 @permission_classes([IsAuthenticated])
 def musicians_genres(request, musician_id, genre_id):
     try:
-        musician = Musician.objects.get(id=musician_id)
+        musician = Musician.objects.get(user=musician_id)
     except Musician.DoesNotExist:
         raise Http404
     try:
@@ -177,7 +177,7 @@ def musicians_genres(request, musician_id, genre_id):
     if request.method == 'POST':
         musician.genres.add(genre)
         musician.save()
-        musician_genres = Genre.objects.filter(musicians__id=musician.id)
+        musician_genres = Genre.objects.filter(musicians__user=musician.user)
         serializer = GenreSerializer(musician_genres, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -191,7 +191,7 @@ def musicians_genres(request, musician_id, genre_id):
 @permission_classes([IsAuthenticated])
 def musicians_instruments(request, musician_id, instrument_id):
     try:
-        musician = Musician.objects.get(id=musician_id)
+        musician = Musician.objects.get(user=musician_id)
     except Musician.DoesNotExist:
         raise Http404
     try:
@@ -202,7 +202,7 @@ def musicians_instruments(request, musician_id, instrument_id):
     if request.method == 'POST':
         musician.instruments.add(instrument)
         musician.save()
-        musician_instruments = Instrument.objects.filter(musicians__id=musician.id)
+        musician_instruments = Instrument.objects.filter(musicians__user=musician.user)
         serializer = InstrumentSerializer(musician_instruments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -236,12 +236,12 @@ def list_follower_by_followed(request, followed_id):
 @permission_classes([IsAuthenticated])
 def create_delete_following(request, follower_id, followed_id):
     try:
-        Musician.objects.get(id=follower_id)
+        Musician.objects.get(user=follower_id)
     except Musician.DoesNotExist:
         raise Http404
 
     try:
-        Musician.objects.get(id=followed_id)
+        Musician.objects.get(user=followed_id)
     except Musician.DoesNotExist:
         raise Http404
 
@@ -265,7 +265,7 @@ def musician_filter(request):
         filters = verify_field(request.data)
         query = '''select *
         from musicians m
-        inner join profiles p on m.musicians_id = p.id
+        inner join profiles p on m.musicians_id = p.user_id
         inner join districts d on p.district_id = d.id
         left join musicians_genres mg on m.musicians_id=mg.musician_id
         left join musicians_instruments mi on m.musicians_id=mi.musician_id

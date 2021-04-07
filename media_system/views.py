@@ -29,11 +29,11 @@ def genres_list(request):
 def list_genres_by_musician(request, musician_id):
     if request.method == 'GET':
         try:
-            Musician.objects.get(id=musician_id)
+            Musician.objects.get(user=musician_id)
         except Musician.DoesNotExist:
             raise Http404
 
-        musician_genres = Genre.objects.filter(musicians__id=musician_id)
+        musician_genres = Genre.objects.filter(musicians__user=musician_id)
         serializer = GenreSerializer(musician_genres, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -54,10 +54,10 @@ def instruments_list(request):
 def list_instruments_by_musician(request, musician_id):
     if request.method == 'GET':
         try:
-            Musician.objects.get(id=musician_id)
+            Musician.objects.get(user=musician_id)
         except Musician.DoesNotExist:
             raise Http404
 
-        musician_instruments = Instrument.objects.filter(musicians__id=musician_id)
+        musician_instruments = Instrument.objects.filter(musicians__user=musician_id)
         serializer = InstrumentSerializer(musician_instruments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

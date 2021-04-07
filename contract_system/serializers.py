@@ -19,9 +19,9 @@ class ContractSerializer(serializers.ModelSerializer):
     state = serializers.CharField(source='contract_state.state', read_only=True)
 
     def create(self, validated_data):
-        organizer = Organizer.objects.get(id=validated_data["organizer_id"])
+        organizer = Organizer.objects.get(user=validated_data["organizer_id"])
         validated_data["organizer"] = organizer
-        musician = Musician.objects.get(id=validated_data["musician_id"])
+        musician = Musician.objects.get(user=validated_data["musician_id"])
         validated_data["musician"] = musician
         district = District.objects.get(id=validated_data["district_id"])
         validated_data["district"] = district
