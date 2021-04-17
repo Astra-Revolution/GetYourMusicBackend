@@ -3,7 +3,6 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from .managers import UserManager
 from locations.models import District
-from media_system.models import Genre, Instrument
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,8 +44,6 @@ class Musician(Profile):
                                      primary_key=True, serialize=False)
     artistic_name = models.CharField(max_length=100, null=True)
     rating = models.FloatField(default=0)
-    genres = models.ManyToManyField(Genre, related_name='musicians')
-    instruments = models.ManyToManyField(Instrument, related_name='musicians')
 
     def __str__(self):
         return self.first_name
@@ -64,12 +61,3 @@ class Organizer(Profile):
 
     class Meta:
         db_table = 'organizers'
-
-
-class Following(models.Model):
-    follower = models.ForeignKey(Musician, on_delete=models.CASCADE)
-    followed = models.ForeignKey(Musician, on_delete=models.CASCADE, related_name='followed')
-    follow_date = models.CharField(max_length=60)
-
-    class Meta:
-        db_table = 'following'

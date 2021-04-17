@@ -5,7 +5,7 @@ from channels.generic.websocket import WebsocketConsumer
 from requests import Response
 from rest_framework import status
 
-from social_system.models import Message, Chat
+from message_system.models import Message, Chat
 from users_system.models import Profile, User
 
 

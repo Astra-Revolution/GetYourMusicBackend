@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from .models import User, Profile, Musician, Organizer, Following
+from .models import User, Profile, Musician, Organizer
 from locations.models import District
 from datetime import date
 from django.contrib.auth.hashers import make_password
-import social_system.notifier
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,23 +66,3 @@ class OrganizerSerializer(ProfileSerializer):
     class Meta:
         model = Organizer
         fields = ProfileSerializer.Meta.fields
-
-
-class FollowingSerializer(serializers.ModelSerializer):
-    follower_name = serializers.CharField(source='follower.first_name', read_only=True)
-    followed_name = serializers.CharField(source='followed.first_name', read_only=True)
-
-    def create(self, validated_data):
-        follower = Musician.objects.get(user=validated_data["follower_id"])
-        validated_data["follower"] = follower
-        followed = Musician.objects.get(user=validated_data["followed_id"])
-        validated_data["followed"] = followed
-        validated_data["follow_date"] = str(date.today())
-        following = Following.objects.create(**validated_data)
-        social_system.notifier.notifier(following)
-        return following
-
-    class Meta:
-        model = Following
-        fields = ('follower_name', 'followed_name', 'follow_date')
-        read_only_fields = ('follow_date',)
