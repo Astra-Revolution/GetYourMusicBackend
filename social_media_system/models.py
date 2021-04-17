@@ -2,6 +2,28 @@ from django.db import models
 from users_system.models import Profile, Musician, User
 
 
+class Genre(models.Model):
+    name = models.CharField(max_length=60)
+    musicians = models.ManyToManyField(Musician, related_name='genres')
+
+    def str(self):
+        return self.name
+
+    class Meta:
+        db_table = 'genres'
+
+
+class Instrument(models.Model):
+    name = models.CharField(max_length=60)
+    musicians = models.ManyToManyField(Musician, related_name='instruments')
+
+    def str(self):
+        return self.name
+
+    class Meta:
+        db_table = 'instruments'
+
+
 class Publication(models.Model):
     video_url = models.CharField(max_length=300)
     content = models.CharField(max_length=200)
@@ -27,17 +49,6 @@ class Comment(models.Model):
         db_table = 'comments'
 
 
-class Notification(models.Model):
-    message = models.CharField(max_length=120)
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-
-    def str(self):
-        return self.message
-
-    class Meta:
-        db_table = 'notifications'
-
-
 class Following(models.Model):
     follower = models.ForeignKey(Musician, on_delete=models.CASCADE)
     followed = models.ForeignKey(Musician, on_delete=models.CASCADE, related_name='followed')
@@ -47,23 +58,12 @@ class Following(models.Model):
         db_table = 'following'
 
 
-class Genre(models.Model):
-    name = models.CharField(max_length=60)
-    musicians = models.ManyToManyField(Musician, related_name='genres')
+class Notification(models.Model):
+    message = models.CharField(max_length=120)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def str(self):
-        return self.name
+        return self.message
 
     class Meta:
-        db_table = 'genres'
-
-
-class Instrument(models.Model):
-    name = models.CharField(max_length=60)
-    musicians = models.ManyToManyField(Musician, related_name='instruments')
-
-    def str(self):
-        return self.name
-
-    class Meta:
-        db_table = 'instruments'
+        db_table = 'notifications'

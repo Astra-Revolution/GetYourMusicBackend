@@ -5,6 +5,18 @@ from users_system.models import Profile, Musician
 import social_media_system.notifier
 
 
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ('id', 'name')
+
+
+class InstrumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instrument
+        fields = ('id', 'name')
+
+
 class PublicationSerializer(serializers.ModelSerializer):
     musician_name = serializers.CharField(source='musician.first_name', read_only=True)
 
@@ -39,14 +51,6 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'commenter_name', 'content')
 
 
-class NotificationSerializer(serializers.ModelSerializer):
-    profile_name = serializers.CharField(source='profile.first_name', read_only=True)
-
-    class Meta:
-        model = Notification
-        fields = ('id', 'message', 'profile_name')
-
-
 class FollowingSerializer(serializers.ModelSerializer):
     follower_name = serializers.CharField(source='follower.first_name', read_only=True)
     followed_name = serializers.CharField(source='followed.first_name', read_only=True)
@@ -67,13 +71,9 @@ class FollowingSerializer(serializers.ModelSerializer):
         read_only_fields = ('follow_date',)
 
 
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = ('id', 'name')
+class NotificationSerializer(serializers.ModelSerializer):
+    profile_name = serializers.CharField(source='profile.first_name', read_only=True)
 
-
-class InstrumentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Instrument
-        fields = ('id', 'name')
+        model = Notification
+        fields = ('id', 'message', 'profile_name')

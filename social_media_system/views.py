@@ -10,14 +10,114 @@ from .serializers import PublicationSerializer, CommentSerializer, NotificationS
 from .models import Publication, Comment, Notification, Following, Instrument, Genre
 from users_system.models import Profile, Musician
 
+genres_response = openapi.Response('genres description', GenreSerializer(many=True))
+instruments_response = openapi.Response('instruments description', InstrumentSerializer(many=True))
 publications_response = openapi.Response('publications description', PublicationSerializer(many=True))
 publication_response = openapi.Response('publication description', PublicationSerializer)
 comments_response = openapi.Response('comments description', CommentSerializer(many=True))
 comment_response = openapi.Response('comment description', CommentSerializer)
-notifications_response = openapi.Response('notifications description', NotificationSerializer(many=True))
 musicians_response = openapi.Response('musicians description', MusicianSerializer(many=True))
-genres_response = openapi.Response('genres description', GenreSerializer(many=True))
-instruments_response = openapi.Response('instruments description', InstrumentSerializer(many=True))
+notifications_response = openapi.Response('notifications description', NotificationSerializer(many=True))
+
+
+@swagger_auto_schema(method='get', responses={200: genres_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def genres_list(request):
+    if request.method == 'GET':
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: genres_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_genres_by_musician(request, musician_id):
+    if request.method == 'GET':
+        try:
+            Musician.objects.get(user=musician_id)
+        except Musician.DoesNotExist:
+            raise Http404
+
+        musician_genres = Genre.objects.filter(musicians__user=musician_id)
+        serializer = GenreSerializer(musician_genres, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='get', responses={200: instruments_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def instruments_list(request):
+    if request.method == 'GET':
+        instrument = Instrument.objects.all()
+        serializer = InstrumentSerializer(instrument, many=True)
+        return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: instruments_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_instruments_by_musician(request, musician_id):
+    if request.method == 'GET':
+        try:
+            Musician.objects.get(user=musician_id)
+        except Musician.DoesNotExist:
+            raise Http404
+
+        musician_instruments = Instrument.objects.filter(musicians__user=musician_id)
+        serializer = InstrumentSerializer(musician_instruments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def musicians_genres(request, musician_id, genre_id):
+    try:
+        musician = Musician.objects.get(user=musician_id)
+    except Musician.DoesNotExist:
+        raise Http404
+    try:
+        genre = Genre.objects.get(id=genre_id)
+    except Genre.DoesNotExist:
+        raise Http404
+
+    if request.method == 'POST':
+        musician.genres.add(genre)
+        musician.save()
+        musician_genres = Genre.objects.filter(musicians__user=musician.user)
+        serializer = GenreSerializer(musician_genres, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == 'DELETE':
+        musician.genres.remove(genre)
+        musician.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def musicians_instruments(request, musician_id, instrument_id):
+    try:
+        musician = Musician.objects.get(user=musician_id)
+    except Musician.DoesNotExist:
+        raise Http404
+    try:
+        instrument = Instrument.objects.get(id=instrument_id)
+    except Instrument.DoesNotExist:
+        raise Http404
+
+    if request.method == 'POST':
+        musician.instruments.add(instrument)
+        musician.save()
+        musician_instruments = Instrument.objects.filter(musicians__user=musician.user)
+        serializer = InstrumentSerializer(musician_instruments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == 'DELETE':
+        musician.instruments.remove(instrument)
+        musician.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @swagger_auto_schema(method='get', responses={200: publications_response})
@@ -135,16 +235,6 @@ def comment_detail(request, comment_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='get', responses={200: notifications_response})
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def list_notification_by_profile(request, profile_id):
-    if request.method == 'GET':
-        notifications = Notification.objects.filter(profile__user=profile_id)
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data)
-
-
 @swagger_auto_schema(method='get', responses={200: musicians_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -191,101 +281,11 @@ def create_delete_following(request, follower_id, followed_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='get', responses={200: genres_response})
+@swagger_auto_schema(method='get', responses={200: notifications_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def genres_list(request):
+def list_notification_by_profile(request, profile_id):
     if request.method == 'GET':
-        genres = Genre.objects.all()
-        serializer = GenreSerializer(genres, many=True)
+        notifications = Notification.objects.filter(profile__user=profile_id)
+        serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)
-
-
-@swagger_auto_schema(method='get', responses={200: genres_response})
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def list_genres_by_musician(request, musician_id):
-    if request.method == 'GET':
-        try:
-            Musician.objects.get(user=musician_id)
-        except Musician.DoesNotExist:
-            raise Http404
-
-        musician_genres = Genre.objects.filter(musicians__user=musician_id)
-        serializer = GenreSerializer(musician_genres, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@swagger_auto_schema(method='get', responses={200: instruments_response})
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def instruments_list(request):
-    if request.method == 'GET':
-        instrument = Instrument.objects.all()
-        serializer = InstrumentSerializer(instrument, many=True)
-        return Response(serializer.data)
-
-
-@swagger_auto_schema(method='get', responses={200: instruments_response})
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def list_instruments_by_musician(request, musician_id):
-    if request.method == 'GET':
-        try:
-            Musician.objects.get(user=musician_id)
-        except Musician.DoesNotExist:
-            raise Http404
-
-        musician_instruments = Instrument.objects.filter(musicians__user=musician_id)
-        serializer = InstrumentSerializer(musician_instruments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def musicians_genres(request, musician_id, genre_id):
-    try:
-        musician = Musician.objects.get(user=musician_id)
-    except Musician.DoesNotExist:
-        raise Http404
-    try:
-        genre = Genre.objects.get(id=genre_id)
-    except Genre.DoesNotExist:
-        raise Http404
-
-    if request.method == 'POST':
-        musician.genres.add(genre)
-        musician.save()
-        musician_genres = Genre.objects.filter(musicians__user=musician.user)
-        serializer = GenreSerializer(musician_genres, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    if request.method == 'DELETE':
-        musician.genres.remove(genre)
-        musician.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def musicians_instruments(request, musician_id, instrument_id):
-    try:
-        musician = Musician.objects.get(user=musician_id)
-    except Musician.DoesNotExist:
-        raise Http404
-    try:
-        instrument = Instrument.objects.get(id=instrument_id)
-    except Instrument.DoesNotExist:
-        raise Http404
-
-    if request.method == 'POST':
-        musician.instruments.add(instrument)
-        musician.save()
-        musician_instruments = Instrument.objects.filter(musicians__user=musician.user)
-        serializer = InstrumentSerializer(musician_instruments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    if request.method == 'DELETE':
-        musician.instruments.remove(instrument)
-        musician.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)

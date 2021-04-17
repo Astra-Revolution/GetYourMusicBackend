@@ -11,6 +11,134 @@ from .serializers import PublicationSerializer, CommentSerializer, NotificationS
     GenreSerializer, InstrumentSerializer
 
 
+class GenreTest(APITestCase):
+
+    def setUp(self):
+        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
+        self.client.force_authenticate(user=admin)
+        self.region_lima = Region.objects.create(name='Lima')
+        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
+        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
+        self.noli = User.objects.create(email='noli@gmail.com', password=make_password('noli98'))
+        self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
+                                                      phone='995995408', type='Musician', user=self.mario,
+                                                      district=self.los_olivos)
+        self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
+                                                     phone='988380177', type='Musician', user=self.noli,
+                                                     district=self.los_olivos)
+        self.rock = Genre.objects.create(name='rock')
+        self.pop = Genre.objects.create(name='pop')
+        self.electro = Genre.objects.create(name='electro')
+        self.metal = Genre.objects.create(name='metal')
+        self.mario_musician.genres.add(self.rock)
+        self.mario_musician.genres.add(self.pop)
+        self.noli_musician.genres.add(self.rock)
+
+    def test_get_all_genres(self):
+        response = self.client.get(reverse('genres_list'))
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_genres_by_musician(self):
+        response = self.client.get(reverse('list_genres_by_musician',
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        musician_genres = Genre.objects.filter(musicians__user=self.mario_musician.user.id)
+        serializer = GenreSerializer(musician_genres, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_valid_musicians_genres(self):
+        response = self.client.post(
+            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
+                                                'genre_id': self.pop.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_invalid_musicians_genres(self):
+        response = self.client.post(
+            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
+                                                'genre_id': 50}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_valid_musicians_genres(self):
+        response = self.client.delete(
+            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
+                                                'genre_id': self.pop.id}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_invalid_musicians_genres(self):
+        response = self.client.delete(
+            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
+                                                'genre_id': 50}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class InstrumentTest(APITestCase):
+
+    def setUp(self):
+        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
+        self.client.force_authenticate(user=admin)
+        self.region_lima = Region.objects.create(name='Lima')
+        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
+        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
+        self.noli = User.objects.create(email='noli@gmail.com', password=make_password('noli98'))
+        self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
+                                                      phone='995995408', type='Musician', user=self.mario,
+                                                      district=self.los_olivos)
+        self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
+                                                     phone='988380177', type='Musician', user=self.noli,
+                                                     district=self.los_olivos)
+        self.guitar = Instrument.objects.create(name='guitar')
+        self.ukulele = Instrument.objects.create(name='ukulele')
+        self.drums = Instrument.objects.create(name='drums')
+        self.piano = Instrument.objects.create(name='piano')
+        self.mario_musician.instruments.add(self.guitar)
+        self.mario_musician.instruments.add(self.ukulele)
+        self.noli_musician.instruments.add(self.guitar)
+
+    def test_get_all_instruments(self):
+        response = self.client.get(reverse('instruments_list'))
+        instruments = Instrument.objects.all()
+        serializer = InstrumentSerializer(instruments, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_instruments_by_musician(self):
+        response = self.client.get(reverse('list_instruments_by_musician',
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
+        musician_instruments = Instrument.objects.filter(musicians__user=self.mario_musician.user.id)
+        serializer = InstrumentSerializer(musician_instruments, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_valid_musicians_instruments(self):
+        response = self.client.post(
+            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
+                                                     'instrument_id': self.ukulele.id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_invalid_musicians_instruments(self):
+        response = self.client.post(
+            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
+                                                     'instrument_id': 50}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_valid_musicians_instruments(self):
+        response = self.client.delete(
+            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
+                                                     'instrument_id': self.ukulele.id}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_invalid_musicians_instruments(self):
+        response = self.client.delete(
+            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
+                                                     'instrument_id': 50}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
 class PublicationTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
@@ -198,31 +326,6 @@ class CommentTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class NotificationTest(APITestCase):
-    def setUp(self):
-        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
-        self.client.force_authenticate(user=admin)
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
-        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
-        self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
-        self.mario_profile = Profile.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
-                                                    phone='995995408', type='Musician', user=self.mario,
-                                                    district=self.los_olivos)
-        self.cesar_profile = Profile.objects.create(first_name='cesar', last_name='ramirez', birth_date='21/03/1996',
-                                                    phone='927528321', type='Organizer', user=self.cesar,
-                                                    district=self.los_olivos)
-
-    def test_get_all_notifications_by_profile(self):
-        response = self.client.get(reverse('list_notification_by_profile',
-                                           kwargs={'profile_id': self.mario_profile.user.id}))
-        notifications = Notification.objects.filter(profile__user=self.mario_profile.user.id)
-        serializer = NotificationSerializer(notifications, many=True)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
 class FollowingTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
@@ -289,8 +392,7 @@ class FollowingTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class GenreTest(APITestCase):
-
+class NotificationTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
         self.client.force_authenticate(user=admin)
@@ -298,120 +400,18 @@ class GenreTest(APITestCase):
         self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
         self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
         self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
-        self.noli = User.objects.create(email='noli@gmail.com', password=make_password('noli98'))
-        self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
-                                                      phone='995995408', type='Musician', user=self.mario,
-                                                      district=self.los_olivos)
-        self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
-                                                     phone='988380177', type='Musician', user=self.noli,
-                                                     district=self.los_olivos)
-        self.rock = Genre.objects.create(name='rock')
-        self.pop = Genre.objects.create(name='pop')
-        self.electro = Genre.objects.create(name='electro')
-        self.metal = Genre.objects.create(name='metal')
-        self.mario_musician.genres.add(self.rock)
-        self.mario_musician.genres.add(self.pop)
-        self.noli_musician.genres.add(self.rock)
+        self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
+        self.mario_profile = Profile.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
+                                                    phone='995995408', type='Musician', user=self.mario,
+                                                    district=self.los_olivos)
+        self.cesar_profile = Profile.objects.create(first_name='cesar', last_name='ramirez', birth_date='21/03/1996',
+                                                    phone='927528321', type='Organizer', user=self.cesar,
+                                                    district=self.los_olivos)
 
-    def test_get_all_genres(self):
-        response = self.client.get(reverse('genres_list'))
-        genres = Genre.objects.all()
-        serializer = GenreSerializer(genres, many=True)
+    def test_get_all_notifications_by_profile(self):
+        response = self.client.get(reverse('list_notification_by_profile',
+                                           kwargs={'profile_id': self.mario_profile.user.id}))
+        notifications = Notification.objects.filter(profile__user=self.mario_profile.user.id)
+        serializer = NotificationSerializer(notifications, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_get_all_genres_by_musician(self):
-        response = self.client.get(reverse('list_genres_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.user.id}))
-        musician_genres = Genre.objects.filter(musicians__user=self.mario_musician.user.id)
-        serializer = GenreSerializer(musician_genres, many=True)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_valid_musicians_genres(self):
-        response = self.client.post(
-            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
-                                                'genre_id': self.pop.id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_invalid_musicians_genres(self):
-        response = self.client.post(
-            reverse('musicians_genres', kwargs={'musician_id': self.noli_musician.user.id,
-                                                'genre_id': 50}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_delete_valid_musicians_genres(self):
-        response = self.client.delete(
-            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
-                                                'genre_id': self.pop.id}))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_delete_invalid_musicians_genres(self):
-        response = self.client.delete(
-            reverse('musicians_genres', kwargs={'musician_id': self.mario_musician.user.id,
-                                                'genre_id': 50}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-class InstrumentTest(APITestCase):
-
-    def setUp(self):
-        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
-        self.client.force_authenticate(user=admin)
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
-        self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
-        self.noli = User.objects.create(email='noli@gmail.com', password=make_password('noli98'))
-        self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
-                                                      phone='995995408', type='Musician', user=self.mario,
-                                                      district=self.los_olivos)
-        self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
-                                                     phone='988380177', type='Musician', user=self.noli,
-                                                     district=self.los_olivos)
-        self.guitar = Instrument.objects.create(name='guitar')
-        self.ukulele = Instrument.objects.create(name='ukulele')
-        self.drums = Instrument.objects.create(name='drums')
-        self.piano = Instrument.objects.create(name='piano')
-        self.mario_musician.instruments.add(self.guitar)
-        self.mario_musician.instruments.add(self.ukulele)
-        self.noli_musician.instruments.add(self.guitar)
-
-    def test_get_all_instruments(self):
-        response = self.client.get(reverse('instruments_list'))
-        instruments = Instrument.objects.all()
-        serializer = InstrumentSerializer(instruments, many=True)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_get_all_instruments_by_musician(self):
-        response = self.client.get(reverse('list_instruments_by_musician',
-                                           kwargs={'musician_id': self.mario_musician.user.id}))
-        musician_instruments = Instrument.objects.filter(musicians__user=self.mario_musician.user.id)
-        serializer = InstrumentSerializer(musician_instruments, many=True)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_valid_musicians_instruments(self):
-        response = self.client.post(
-            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
-                                                     'instrument_id': self.ukulele.id}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_invalid_musicians_instruments(self):
-        response = self.client.post(
-            reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
-                                                     'instrument_id': 50}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_delete_valid_musicians_instruments(self):
-        response = self.client.delete(
-            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
-                                                     'instrument_id': self.ukulele.id}))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_delete_invalid_musicians_instruments(self):
-        response = self.client.delete(
-            reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
-                                                     'instrument_id': 50}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
