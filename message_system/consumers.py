@@ -2,7 +2,6 @@ import json
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from requests import Response
 from rest_framework import status
 
 from message_system.models import Message, Chat
@@ -112,4 +111,3 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         message = event['message']
         self.send(text_data=json.dumps(message))
-

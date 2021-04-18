@@ -14,7 +14,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-import message_system.routing
+import message_system.urls
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GetYourMusic.settings')
 django.setup()
@@ -23,7 +23,7 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            message_system.routing.websocket_urlpatterns
+            message_system.urls.websocket_urlpatterns
         )
     ),
 })
