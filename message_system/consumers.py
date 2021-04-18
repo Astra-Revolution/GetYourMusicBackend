@@ -44,8 +44,10 @@ class ChatConsumer(WebsocketConsumer):
         author = data['from']
         text = data['text']
         room_id = data['room']
-        # user = User.objects.get(email=author)
-        author_profile, created = Profile.objects.get(user__email=author)
+        user = User.objects.get(email=author)
+        # print(user)
+        author_profile = Profile.objects.get(user_id=user.id)
+        # print(author_profile)
         room = Chat.objects.get(id=room_id)
         if not room:
             raise Exception('Room did not founded', status.HTTP_404_NOT_FOUND)
