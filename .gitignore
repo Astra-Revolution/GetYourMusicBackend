@@ -17,3 +17,4 @@ venv.bak/
 *.pot
 pycache/
 GetYourMusic/settings.py
+/.vs/
