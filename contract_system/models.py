@@ -19,6 +19,8 @@ class Contract(models.Model):
     reference = models.CharField(max_length=60)
     start_date = models.CharField(max_length=60)
     end_date = models.CharField(max_length=60)
+    description = models.CharField(max_length=120, null=True)
+    amount = models.FloatField(null=True)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     musician = models.ForeignKey(Musician, on_delete=models.CASCADE)

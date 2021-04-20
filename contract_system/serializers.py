@@ -34,8 +34,8 @@ class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
         fields = ('id', 'name', 'address', 'reference',
-                  'start_date', 'end_date', 'district_name', 'organizer_name',
-                  'musician_name', 'state', 'district_id')
+                  'description', 'amount', 'start_date', 'end_date',
+                  'district_name', 'organizer_name', 'musician_name', 'state', 'district_id')
 
 
 class QualificationSerializer(serializers.ModelSerializer):
