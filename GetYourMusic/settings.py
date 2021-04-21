@@ -31,8 +31,7 @@ SECRET_KEY = '_vy#^5dkw0otdow3#hl)ymdwxu3&=t%=0(2$2(owk@dfion1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10'
-                 '.0.2.2', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -44,11 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users_system.apps.UsersSystemConfig',
+    'accounts.apps.AccountsConfig',
+    'social_media.apps.SocialMediaConfig',
     'locations.apps.LocationsConfig',
-    'contract_system.apps.ContractSystemConfig',
-    'message_system.apps.MessageSystemConfig',
-    'social_media_system.apps.SocialMediaSystemConfig',
+    'agreements.apps.AgreementsConfig',
+    'messaging.apps.MessagingConfig',
     'rest_framework',
     'rest_framework_swagger',
     'drf_yasg',
@@ -137,7 +136,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
-AUTH_USER_MODEL = 'users_system.User'
+AUTH_USER_MODEL = 'accounts.User'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=5),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=20),

@@ -36,8 +36,8 @@ urlpatterns = [
     path('doc/', schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),  # <-- Here
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/', include('users_system.urls')),
+    path('api/', include('accounts.urls')),
     path('api/', include('locations.urls')),
-    path('api/', include('contract_system.urls')),
-    path('api/', include('social_media_system.urls'))
+    path('api/', include('agreements.urls')),
+    path('api/', include('social_media.urls'))
 ]
