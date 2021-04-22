@@ -2,7 +2,6 @@ import json
 
 import requests
 from behave import *
-from requests.auth import HTTPBasicAuth
 
 response_codes = {}
 request_bodies = {}
