@@ -169,8 +169,8 @@ def musician_filter(request):
         from musicians m
         inner join profiles p on m.musicians_id = p.user_id
         inner join districts d on p.district_id = d.id
-        left join musicians_genres mg on m.musicians_id=mg.musician_id
-        left join musicians_instruments mi on m.musicians_id=mi.musician_id
+        left join genres_musicians mg on m.musicians_id=mg.musician_id
+        left join instruments_musicians mi on m.musicians_id=mi.musician_id
         where 1 = 1'''
         if filters.get('district'):
             query += ' and p.district_id = %(district)s'
