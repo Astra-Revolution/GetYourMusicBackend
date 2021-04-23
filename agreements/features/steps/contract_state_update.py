@@ -8,8 +8,8 @@ request_bodies = {}
 api_url = "http://localhost:8000/api/contracts/1/contract_states/"
 api_url_contracts = "http://localhost:8000/api/musicians/3/contracts/"
 login_url = "http://localhost:8000/api/login/"
-email = "raphael123@gmail.com"
-password = "password"
+email = "albieri1304@gmail.com"
+password = "albieri98"
 response_content = {}
 request_headers = {}
 use_step_matcher("re")
