@@ -46,7 +46,7 @@ jobs:
     needs:
       - build
 
-    runs-on: ubuntu-last
+    runs-on: ubuntu-lastest
 
     steps:
       #Check-out your repository under $GITHUB_WORKSPACE
