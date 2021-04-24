@@ -98,9 +98,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'get_your_music',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
+        'USER': 'admin',
+        'PASSWORD': 'gym202101upc',
+        'HOST': 'gym-db-1.ch9wl3tnjhev.us-east-1.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
