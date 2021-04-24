@@ -102,6 +102,9 @@ DATABASES = {
         'PASSWORD': 'gym202101upc',
         'HOST': 'gym-db-1.ch9wl3tnjhev.us-east-1.rds.amazonaws.com',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 
