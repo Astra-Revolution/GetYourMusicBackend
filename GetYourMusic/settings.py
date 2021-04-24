@@ -96,15 +96,15 @@ WSGI_APPLICATION = 'GetYourMusic.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'get_your_music',
-        'USER': 'admin',
-        'PASSWORD': 'gym202101upc',
-        'HOST': 'gym-db-1.ch9wl3tnjhev.us-east-1.rds.amazonaws.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'USER': 'postgres',
+        'PASSWORD': '202101gympost',
+        'HOST': 'gym-post.ch9wl3tnjhev.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
+        # 'OPTIONS': {
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        # }
     }
 }
 

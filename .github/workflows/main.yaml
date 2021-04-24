@@ -71,6 +71,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      # Migrate all migrations
+      - name: Migrate data base
+        run: |
+          python manage.py migrate
+
       # Elastic Beanstalk CLI version
       - name: Get EB CLI version
         run: |
