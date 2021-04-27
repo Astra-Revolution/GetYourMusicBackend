@@ -18,11 +18,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 STATIC_ROOT = os.path.join(BASE_DIR, "GetYourMusic", "static")
-STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    STATIC_URL
-]
+STATICFILES_STORAGE = 'GetYourMusic.storage.S3Storage'
 
 # STATICFILES_STORAGE = 'GetYourMusic.storage.S3Storage'
 
