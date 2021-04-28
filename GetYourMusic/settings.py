@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'drf_yasg',
     'corsheaders',
-    'channels'
+    'channels',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -155,8 +156,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, "archives", "static")
-STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, "archives", "static")
+# STATIC_URL = '/static/'
 
 
 # GMAIL SETTINGS
@@ -179,3 +180,16 @@ CHANNEL_LAYERS = {
         # }
     }
 }
+
+# Static Files Config
+AWS_STORAGE_BUCKET_NAME = 'gym-statics'
+AWS_S3_REGION_NAME = 'us-east-1'  # e.g. us-east-2
+AWS_ACCESS_KEY_ID = 'AKIA5UK3SZK6GA5KO5MS'
+AWS_SECRET_ACCESS_KEY = 'vE0nTC5ywhet7RULrfJtv4DFPwBwppcYEVmej4wi'
+
+# Tell django-storages the domain to use to refer to static files.
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+# Tell the staticfiles app to use S3Boto3 storage when writing the collected static files (when
+# you run `collectstatic`).
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

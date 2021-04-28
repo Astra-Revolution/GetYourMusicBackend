@@ -1,5 +1,6 @@
 from locations.models import Region, Province, District
 
+
 def create_data(apps, schema_editor):
     regions = {'Lima': {'Lima': ['Lima', 'Jesus Maria', 'Pueblo Libre'],
                         'Barranca': ['Supe', 'Barranca']},
@@ -16,7 +17,6 @@ def create_data(apps, schema_editor):
             Province(name=p, region=db_region).save()
         db_provinces = Province.objects.filter(region_id=db_region.id)
         for db_province in db_provinces:
-            print(db_province)
             districts = regions[db_region.name].get(db_province.name)
             for d in districts:
                 District(name=d, province=db_province).save()

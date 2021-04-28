@@ -94,11 +94,11 @@ jobs:
       # Create the Elastic Beanstalk application
       - name: Create EBS applications
         run: |
-          eb init -p python-3.8 GetYourMusic --region us-east-1
+          eb init -p python-3.8 GetYourMusic5 --region us-east-1
 
       # Deploy to (or Create) the Elastic Beanstalk environment
       - name: Create test envinroment and deploy
         run: |
-          (eb use environment2 && eb status environment2 && eb deploy) || eb create environment2
+          eb create environment12
 
 
