@@ -99,6 +99,6 @@ jobs:
       # Deploy to (or Create) the Elastic Beanstalk environment
       - name: Create test envinroment and deploy
         run: |
-          eb use test-environment2 && eb status test-environment2 && eb deploy) || eb create environment2
+          (eb use test-environment2 && eb status test-environment2 && eb deploy) || eb create environment2
 
 
