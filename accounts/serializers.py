@@ -41,11 +41,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         district = District.objects.get(id=validated_data["district_id"])
         validated_data["district"] = district
         validated_data["register_date"] = str(date.today())
-        type_profile = validated_data["type"]
+        validated_data["type"] = validated_data["type"].lower()
         profile = None
-        if type_profile == "Musician":
+        if validated_data["type"] == "musician":
             profile = Musician.objects.create(**validated_data)
-        elif type_profile == "Organizer":
+        elif validated_data["type"] == "organizer":
             profile = Organizer.objects.create(**validated_data)
         return profile
 
