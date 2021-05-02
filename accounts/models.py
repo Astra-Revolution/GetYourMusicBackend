@@ -27,6 +27,7 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60, null=True)
     birth_date = models.CharField(max_length=60, null=True)
+    image_url = models.TextField(null=True)
     phone = models.CharField(max_length=60, null=True)
     type = models.CharField(max_length=60, null=True)
     register_date = models.CharField(max_length=60, null=True)
