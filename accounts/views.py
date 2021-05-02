@@ -150,6 +150,20 @@ def musicians_list(request):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(method='get', responses={200: musician_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def musicians_detail(request, musician_id):
+    try:
+        musician = Musician.objects.get(user=musician_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        serializer = MusicianSerializer(musician)
+        return Response(serializer.data)
+
+
 @swagger_auto_schema(method='get', responses={200: organizers_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

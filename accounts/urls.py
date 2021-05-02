@@ -18,6 +18,7 @@ urlpatterns = [
     path('users/<int:user_id>/profiles/', create_profiles, name='create_profiles'),
     path('profiles/<int:profile_id>/', profiles_detail, name='profile_detail'),
     path('musicians/', musicians_list, name='musicians_list'),
+    path('musicians/<int:musician_id>/', musicians_list, name='musician_detail'),
     path('musicians-filter/', musician_filter, name='musician_filter'),
     path('organizers/', organizers_list, name='organizers_list'),
 ]
