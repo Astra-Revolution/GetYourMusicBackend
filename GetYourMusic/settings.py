@@ -16,10 +16,10 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'www', "static")
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+
 ]
 
 # Quick-start development settings - unsuitable for production
