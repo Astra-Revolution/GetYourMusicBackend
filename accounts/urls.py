@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import register, user_detail, forgot_password, reset_password, \
-    profiles_list, create_profiles, profiles_detail, musicians_list, organizers_list, musician_filter
+    profiles_list, create_profiles, profiles_detail, musicians_list, organizers_list, musician_filter, musicians_detail
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -18,7 +18,7 @@ urlpatterns = [
     path('users/<int:user_id>/profiles/', create_profiles, name='create_profiles'),
     path('profiles/<int:profile_id>/', profiles_detail, name='profile_detail'),
     path('musicians/', musicians_list, name='musicians_list'),
-    path('musicians/<int:musician_id>/', musicians_list, name='musician_detail'),
+    path('musicians/<int:musician_id>/', musicians_detail, name='musician_detail'),
     path('musicians-filter/', musician_filter, name='musician_filter'),
     path('organizers/', organizers_list, name='organizers_list'),
 ]
