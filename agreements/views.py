@@ -39,9 +39,11 @@ def contract_list(request):
 @swagger_auto_schema(method='get', responses={200: contracts_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_contracts_by_organizer(request, organizer_id):
+def list_contracts_by_organizer(request):
     if request.method == 'GET':
-        contracts = Contract.objects.filter(organizer__user=organizer_id)
+        organizer_id = int(request.query_params.get('organizer_id'))
+        state_id = int(request.query_params.get('state_id'))
+        contracts = Contract.objects.filter(organizer__user=organizer_id, contract_state__id=state_id)
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data)
 
@@ -49,9 +51,11 @@ def list_contracts_by_organizer(request, organizer_id):
 @swagger_auto_schema(method='get', responses={200: contracts_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_contracts_by_musician(request, musician_id):
+def list_contracts_by_musician(request):
     if request.method == 'GET':
-        contracts = Contract.objects.filter(musician__user=musician_id)
+        musician_id = int(request.query_params.get('musician_id'))
+        state_id = int(request.query_params.get('state_id'))
+        contracts = Contract.objects.filter(musician__user=musician_id, contract_state__id=state_id)
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data)
 
