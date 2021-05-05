@@ -14,6 +14,11 @@ contracts_response = openapi.Response('contracts description', ContractSerialize
 contract_response = openapi.Response('contract description', ContractSerializer)
 qualifications_response = openapi.Response('qualifications description', QualificationSerializer(many=True))
 qualification_response = openapi.Response('qualifications description', QualificationSerializer)
+organizer_param = openapi.Parameter('organizer_id', openapi.IN_QUERY, description="organizer id",
+                                    type=openapi.TYPE_INTEGER)
+musician_param = openapi.Parameter('musician_id', openapi.IN_QUERY, description="musician id",
+                                   type=openapi.TYPE_INTEGER)
+state_param = openapi.Parameter('state_id', openapi.IN_QUERY, description="state id", type=openapi.TYPE_INTEGER)
 
 
 @swagger_auto_schema(method='get', responses={200: states_response})
@@ -36,7 +41,8 @@ def contract_list(request):
         return Response(serializer.data)
 
 
-@swagger_auto_schema(method='get', responses={200: contracts_response})
+@swagger_auto_schema(method='get', responses={200: contracts_response},
+                     manual_parameters=[organizer_param, state_param])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_contracts_by_organizer(request):
@@ -48,7 +54,8 @@ def list_contracts_by_organizer(request):
         return Response(serializer.data)
 
 
-@swagger_auto_schema(method='get', responses={200: contracts_response})
+@swagger_auto_schema(method='get', responses={200: contracts_response},
+                     manual_parameters=[musician_param, state_param])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_contracts_by_musician(request):
