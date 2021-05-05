@@ -13,6 +13,8 @@ class ContractStateSerializer(serializers.ModelSerializer):
 
 class ContractSerializer(serializers.ModelSerializer):
     district_id = serializers.IntegerField(write_only=True)
+    organizer_image = serializers.CharField(source='organizer.image_url', read_only=True)
+    musician_image = serializers.CharField(source='musician.image_url', read_only=True)
     district_name = serializers.CharField(source='district.name', read_only=True)
     organizer_name = serializers.CharField(source='organizer.first_name', read_only=True)
     musician_name = serializers.CharField(source='musician.first_name', read_only=True)
@@ -33,9 +35,9 @@ class ContractSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contract
-        fields = ('id', 'name', 'address', 'reference',
-                  'description', 'amount', 'start_date', 'end_date',
-                  'district_name', 'organizer_name', 'musician_name', 'state', 'district_id')
+        fields = ('id', 'name', 'address', 'reference', 'description', 'amount', 'start_date', 'end_date',
+                  'district_name', 'organizer_name', 'musician_name', 'organizer_image', 'musician_image', 'state',
+                  'district_id')
 
 
 class QualificationSerializer(serializers.ModelSerializer):
