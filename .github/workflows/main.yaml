@@ -4,7 +4,7 @@ on:
     branches: [main]
 
 jobs:
-  buildandtest:
+  testandbuild:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +44,7 @@ jobs:
   deploy:
     #only run this job if "build" has ended successfully
     needs:
-      - build
+      - testandbuild
 
     runs-on: ubuntu-latest
 
