@@ -169,7 +169,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'astragetyourmusic@gmail.com'
-EMAIL_HOST_PASSWORD = 'CCNRDMKY2021'
+EMAIL_HOST_PASSWORD = 'hvdqeuurlsjkzbkm'
 
 
 # Channels Configuration
