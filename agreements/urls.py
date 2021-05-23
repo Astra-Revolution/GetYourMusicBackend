@@ -16,7 +16,6 @@ urlpatterns = [
          name='update_contract_state'),
     path('musicians/<int:musician_id>/qualifications/', list_qualifications_by_musician,
          name='list_qualifications_by_musician'),
-    path('contracts/<int:contract_id>/qualifications/',
-         create_qualifications, name='create_qualifications'),
+    path('contracts/<int:contract_id>/qualifications/', create_qualifications, name='create_qualifications'),
     path('qualifications/<int:qualification_id>/', qualification_detail, name='qualification_detail'),
 ]

@@ -1,3 +1,6 @@
+import datetime
+
+from django.utils import timezone
 from django.db import models
 from accounts.models import Profile, Musician
 
@@ -60,6 +63,7 @@ class Following(models.Model):
 
 class Notification(models.Model):
     message = models.CharField(max_length=120)
+    created_at = models.DateTimeField(default=timezone.now(), null=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def str(self):
