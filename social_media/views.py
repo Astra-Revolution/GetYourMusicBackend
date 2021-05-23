@@ -286,6 +286,6 @@ def create_delete_following(request, follower_id, followed_id):
 @permission_classes([IsAuthenticated])
 def list_notification_by_profile(request, profile_id):
     if request.method == 'GET':
-        notifications = Notification.objects.filter(profile__user=profile_id)
+        notifications = Notification.objects.filter(profile__user=profile_id).order_by('-created_at')
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)
