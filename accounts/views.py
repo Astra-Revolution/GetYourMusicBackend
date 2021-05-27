@@ -115,8 +115,8 @@ def create_profiles(request, user_id):
 
 
 @swagger_auto_schema(method='get', responses={200: profile_response})
-@swagger_auto_schema(methods=['put'], request_body=ProfileSerializer)
-@api_view(['GET', 'PUT', 'DELETE'])
+@swagger_auto_schema(methods=['patch'], request_body=ProfileSerializer)
+@api_view(['GET', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def profiles_detail(request, profile_id):
     try:
@@ -128,7 +128,7 @@ def profiles_detail(request, profile_id):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
