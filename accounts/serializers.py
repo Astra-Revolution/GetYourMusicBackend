@@ -59,23 +59,22 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class MusicianSerializer(ProfileSerializer):
-    class MusicianSerializer(ProfileSerializer):
-        followers = serializers.SerializerMethodField('get_followers', read_only=True)
-        followed = serializers.SerializerMethodField('get_followed', read_only=True)
+    followers = serializers.SerializerMethodField('get_followers', read_only=True)
+    followed = serializers.SerializerMethodField('get_followed', read_only=True)
 
-        @staticmethod
-        def get_followers(self):
-            followers = Following.objects.filter(followed_id=self.pk)
-            return followers.count()
+    @staticmethod
+    def get_followers(self):
+        followers = Following.objects.filter(followed_id=self.pk)
+        return followers.count()
 
-        @staticmethod
-        def get_followed(self):
-            followers = Following.objects.filter(follower_id=self.pk)
-            return followers.count()
+    @staticmethod
+    def get_followed(self):
+        followers = Following.objects.filter(follower_id=self.pk)
+        return followers.count()
 
-        class Meta:
-            model = Musician
-            fields = ProfileSerializer.Meta.fields + ('rating', 'artistic_name', 'followers', 'followed')
+    class Meta:
+        model = Musician
+        fields = ProfileSerializer.Meta.fields + ('rating', 'artistic_name', 'followers', 'followed')
 
 
 class OrganizerSerializer(ProfileSerializer):
