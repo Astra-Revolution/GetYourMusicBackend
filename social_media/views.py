@@ -6,7 +6,7 @@ from rest_framework.views import *
 
 from accounts.serializers import MusicianSerializer
 from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, FollowingSerializer, \
-    InstrumentSerializer, GenreSerializer
+    InstrumentSerializer, GenreSerializer, FollowedSerializer, FollowerSerializer
 from .models import Publication, Comment, Notification, Following, Instrument, Genre
 from accounts.models import Profile, Musician
 
@@ -17,6 +17,8 @@ publication_response = openapi.Response('publication description', PublicationSe
 comments_response = openapi.Response('comments description', CommentSerializer(many=True))
 comment_response = openapi.Response('comment description', CommentSerializer)
 musicians_response = openapi.Response('musicians description', MusicianSerializer(many=True))
+followers_response = openapi.Response('followers description', FollowerSerializer(many=True))
+followed_response = openapi.Response('followed description', FollowedSerializer(many=True))
 notifications_response = openapi.Response('notifications description', NotificationSerializer(many=True))
 
 
@@ -238,20 +240,20 @@ def comment_detail(request, comment_id):
 @swagger_auto_schema(method='get', responses={200: musicians_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_followed_by_follower(request, follower_id):
+def list_followed_by_musician(request, musician_id):
     if request.method == 'GET':
-        followed = Following.objects.filter(follower_id=follower_id)
-        serializer = FollowingSerializer(followed, many=True)
+        followed = Following.objects.filter(follower_id=musician_id)
+        serializer = FollowedSerializer(followed, many=True)
         return Response(serializer.data)
 
 
 @swagger_auto_schema(method='get', responses={200: musicians_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def list_follower_by_followed(request, followed_id):
+def list_follower_by_musician(request, musician_id):
     if request.method == 'GET':
-        follower = Following.objects.filter(followed_id=followed_id)
-        serializer = FollowingSerializer(follower, many=True)
+        follower = Following.objects.filter(followed_id=musician_id)
+        serializer = FollowerSerializer(follower, many=True)
         return Response(serializer.data)
 
 

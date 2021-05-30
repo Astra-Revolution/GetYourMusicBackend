@@ -1,14 +1,15 @@
 import json
+
 from django.contrib.auth.hashers import make_password
-from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
-from locations.models import Region, Province, District
 from accounts.models import User, Profile, Musician
+from locations.models import Region, Province, District
 from .models import Publication, Comment, Notification, Following, Genre, Instrument
-from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, FollowingSerializer,\
-    GenreSerializer, InstrumentSerializer
+from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, GenreSerializer, \
+    InstrumentSerializer, FollowedSerializer, FollowerSerializer
 
 
 class GenreTest(APITestCase):
@@ -352,18 +353,18 @@ class FollowingTest(APITestCase):
         self.following_four = Following.objects.create(follower=self.rodrigo_musician, followed=self.mario_musician)
 
     def test_get_all_followed_by_follower(self):
-        response = self.client.get(reverse('list_followed_by_follower',
-                                           kwargs={'follower_id': self.mario_musician.user.id}))
+        response = self.client.get(reverse('list_followed_by_musician',
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
         followed = Following.objects.filter(follower_id=self.mario_musician.user.id)
-        serializer = FollowingSerializer(followed, many=True)
+        serializer = FollowedSerializer(followed, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_follower_by_followed(self):
-        response = self.client.get(reverse('list_follower_by_followed',
-                                           kwargs={'followed_id': self.mario_musician.user.id}))
+        response = self.client.get(reverse('list_follower_by_musician',
+                                           kwargs={'musician_id': self.mario_musician.user.id}))
         followers = Following.objects.filter(followed_id=self.mario_musician.user.id)
-        serializer = FollowingSerializer(followers, many=True)
+        serializer = FollowerSerializer(followers, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
