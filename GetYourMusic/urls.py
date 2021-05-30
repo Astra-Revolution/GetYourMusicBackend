@@ -39,5 +39,6 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
     path('api/', include('locations.urls')),
     path('api/', include('agreements.urls')),
-    path('api/', include('social_media.urls'))
+    path('api/', include('social_media.urls')),
+    path('api/', include('messaging.chat_urls'))
 ]
