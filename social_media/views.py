@@ -4,11 +4,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import *
 
-from accounts.serializers import MusicianSerializer
+from accounts.models import Profile, Musician
+from .models import Publication, Comment, Notification, Following, Instrument, Genre
 from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, FollowingSerializer, \
     InstrumentSerializer, GenreSerializer, FollowedSerializer, FollowerSerializer
-from .models import Publication, Comment, Notification, Following, Instrument, Genre
-from accounts.models import Profile, Musician
 
 genres_response = openapi.Response('genres description', GenreSerializer(many=True))
 instruments_response = openapi.Response('instruments description', InstrumentSerializer(many=True))
@@ -16,7 +15,6 @@ publications_response = openapi.Response('publications description', Publication
 publication_response = openapi.Response('publication description', PublicationSerializer)
 comments_response = openapi.Response('comments description', CommentSerializer(many=True))
 comment_response = openapi.Response('comment description', CommentSerializer)
-musicians_response = openapi.Response('musicians description', MusicianSerializer(many=True))
 followers_response = openapi.Response('followers description', FollowerSerializer(many=True))
 followed_response = openapi.Response('followed description', FollowedSerializer(many=True))
 notifications_response = openapi.Response('notifications description', NotificationSerializer(many=True))
@@ -237,7 +235,7 @@ def comment_detail(request, comment_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='get', responses={200: musicians_response})
+@swagger_auto_schema(method='get', responses={200: followed_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_followed_by_musician(request, musician_id):
@@ -247,7 +245,7 @@ def list_followed_by_musician(request, musician_id):
         return Response(serializer.data)
 
 
-@swagger_auto_schema(method='get', responses={200: musicians_response})
+@swagger_auto_schema(method='get', responses={200: followers_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_follower_by_musician(request, musician_id):
