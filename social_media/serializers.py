@@ -71,6 +71,50 @@ class FollowingSerializer(serializers.ModelSerializer):
         read_only_fields = ('follow_date',)
 
 
+class FollowerSerializer(serializers.ModelSerializer):
+    musician = serializers.SerializerMethodField('get_full_name', read_only=True)
+    image = serializers.CharField(source='follower.image_url', read_only=True)
+    followers = serializers.SerializerMethodField('get_followers', read_only=True)
+
+    @staticmethod
+    def get_full_name(self):
+        musician = self.followed
+        full_name = musician.first_name + musician.last_name
+        return full_name
+
+    @staticmethod
+    def get_followers(self):
+        followers = Following.objects.filter(followed_id=self.followed)
+        return followers.count()
+
+    class Meta:
+        model = Following
+        fields = ('musician', 'image', 'followers', 'follow_date')
+        read_only_fields = ('follow_date',)
+
+
+class FollowedSerializer(serializers.ModelSerializer):
+    musician = serializers.SerializerMethodField('get_full_name', read_only=True)
+    image = serializers.CharField(source='followed.image_url', read_only=True)
+    followers = serializers.SerializerMethodField('get_followers', read_only=True)
+
+    @staticmethod
+    def get_full_name(self):
+        musician = self.follower
+        full_name = musician.first_name + musician.last_name
+        return full_name
+
+    @staticmethod
+    def get_followers(self):
+        followers = Following.objects.filter(followed_id=self.follower)
+        return followers.count()
+
+    class Meta:
+        model = Following
+        fields = ('musician', 'image', 'followers', 'follow_date')
+        read_only_fields = ('follow_date',)
+
+
 class NotificationSerializer(serializers.ModelSerializer):
     profile_name = serializers.CharField(source='profile.first_name', read_only=True)
 
