@@ -22,6 +22,19 @@ STATICFILES_DIRS = [
 
 ]
 
+# Channels Configuration
+ASGI_APPLICATION = 'GetYourMusic.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "CONFIG": {
+            "hosts": ['redis://:p1df77027577ca31e884381fc863db52d1545b9dbc2d95be025e2e155f66057e2@ec2-3-212-9-124.compute-1.amazonaws.com:27279']
+        }
+    }
+}
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -172,15 +185,3 @@ EMAIL_HOST_USER = 'astragetyourmusic@gmail.com'
 EMAIL_HOST_PASSWORD = 'hvdqeuurlsjkzbkm'
 
 
-# Channels Configuration
-ASGI_APPLICATION = 'GetYourMusic.asgi.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "BACKEND": "channels.layers.InMemoryChannelLayer",
-        "CONFIG": {
-            "hosts": ['redis://:p1df77027577ca31e884381fc863db52d1545b9dbc2d95be025e2e155f66057e2@ec2-3-212-9-124.compute-1.amazonaws.com:27279']
-        }
-    }
-}
