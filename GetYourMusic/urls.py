@@ -40,5 +40,5 @@ urlpatterns = [
     path('api/', include('locations.urls')),
     path('api/', include('agreements.urls')),
     path('api/', include('social_media.urls')),
-    path('api/', include('messaging.chat_urls'))
+    path('api/', include('messaging.urls'))
 ]
