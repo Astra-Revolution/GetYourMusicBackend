@@ -17,10 +17,10 @@ from django.core.asgi import get_asgi_application
 import messaging.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GetYourMusic.settings')
-django.setup()
+django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
+    "http": django_asgi_app,
     "websocket": AuthMiddlewareStack(
         URLRouter(
             messaging.routing.channel_routing
