@@ -8,8 +8,8 @@ from rest_framework.test import APITestCase
 from accounts.models import User, Profile, Musician
 from locations.models import Region, Province, District
 from .models import Publication, Comment, Notification, Following, Genre, Instrument
-from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, GenreSerializer, \
-    InstrumentSerializer, FollowedSerializer, FollowerSerializer
+from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, \
+    GenreSerializer, InstrumentSerializer, FollowedSerializer, FollowerSerializer
 
 
 class GenreTest(APITestCase):

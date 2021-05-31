@@ -16,11 +16,13 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+
 ]
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -31,7 +33,7 @@ SECRET_KEY = '_vy#^5dkw0otdow3#hl)ymdwxu3&=t%=0(2$2(owk@dfion1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -54,6 +56,21 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels'
 ]
+
+# Channels Configuration
+ASGI_APPLICATION = 'GetYourMusic.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "CONFIG": {
+            "hosts": ['redis://:p1df77027577ca31e884381fc863db52d1545b9dbc2d95be025e2e155f66057e2@ec2-3-212-9-124.compute-1.amazonaws.com:27279']
+        }
+    }
+}
+
+########################
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -97,10 +114,10 @@ WSGI_APPLICATION = 'GetYourMusic.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'get_your_music',
-        'USER': 'root',
-        'PASSWORD': 'pacheco98',
-        'HOST': '127.0.0.1',
+        'NAME': 'heroku_3266448cf4bf20b',
+        'USER': 'b9682b9a59c7ab',
+        'PASSWORD': '5ea91687',
+        'HOST': 'us-cdbr-east-03.cleardb.com',
         'PORT': '3306',
     }
 }
@@ -172,15 +189,3 @@ EMAIL_HOST_USER = 'astragetyourmusic@gmail.com'
 EMAIL_HOST_PASSWORD = 'hvdqeuurlsjkzbkm'
 
 
-# Channels Configuration
-ASGI_APPLICATION = 'GetYourMusic.asgi.application'
-
-CHANNEL_LAYERS = {
-    'default': {
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # "CONFIG": {
-        #     "hosts": ['redis://localhost:6379/4']
-        # }
-    }
-}
