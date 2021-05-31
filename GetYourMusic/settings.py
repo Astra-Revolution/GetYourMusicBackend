@@ -177,10 +177,10 @@ ASGI_APPLICATION = 'GetYourMusic.asgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # "CONFIG": {
-        #     "hosts": ['redis://localhost:6379/4']
-        # }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "CONFIG": {
+            "hosts": ['redis://:p1df77027577ca31e884381fc863db52d1545b9dbc2d95be025e2e155f66057e2@ec2-3-212-9-124.compute-1.amazonaws.com:27279']
+        }
     }
 }
