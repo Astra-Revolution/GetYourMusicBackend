@@ -18,6 +18,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
+    musician_id = serializers.CharField(source='musician.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
 
     @staticmethod
@@ -35,12 +36,14 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Publication
-        fields = ('id', 'video_url', 'content', 'update_time', 'musician_name')
+        fields = ('id', 'video_url', 'content', 'update_time', 'musician_id', 'musician_name')
         read_only_fields = ('update_time',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    commenter_id = serializers.CharField(source='commenter.user.id', read_only=True)
     commenter_name = serializers.SerializerMethodField('get_full_name', read_only=True)
+    commenter_image = serializers.CharField(source='commenter.image_url', read_only=True)
     content = serializers.CharField(source='publication.content', read_only=True)
 
     @staticmethod
@@ -60,7 +63,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'commenter_name', 'content')
+        fields = ('id', 'text', 'commenter_id', 'commenter_name', 'commenter_image', 'content')
 
 
 class FollowingSerializer(serializers.ModelSerializer):
