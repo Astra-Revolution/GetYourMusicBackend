@@ -23,7 +23,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.musician
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     def create(self, validated_data):
@@ -46,7 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.commenter
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     def create(self, validated_data):
@@ -92,7 +92,7 @@ class FollowerSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.follower
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     @staticmethod
@@ -115,7 +115,7 @@ class FollowedSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.followed
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     @staticmethod
