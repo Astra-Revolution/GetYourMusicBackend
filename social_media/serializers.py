@@ -18,7 +18,13 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    musician_name = serializers.CharField(source='musician.first_name', read_only=True)
+    musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
+
+    @staticmethod
+    def get_full_name(self):
+        musician = self.musician
+        full_name = musician.first_name + musician.last_name
+        return full_name
 
     def create(self, validated_data):
         musician = Musician.objects.get(user=validated_data["musician_id"])
@@ -34,8 +40,14 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    commenter_name = serializers.CharField(source='commenter.first_name', read_only=True)
+    commenter_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     content = serializers.CharField(source='publication.content', read_only=True)
+
+    @staticmethod
+    def get_full_name(self):
+        musician = self.commenter
+        full_name = musician.first_name + musician.last_name
+        return full_name
 
     def create(self, validated_data):
         commenter = Profile.objects.get(user=validated_data["commenter_id"])
