@@ -114,10 +114,10 @@ WSGI_APPLICATION = 'GetYourMusic.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'heroku_3266448cf4bf20b',
-        'USER': 'b9682b9a59c7ab',
-        'PASSWORD': '5ea91687',
-        'HOST': 'us-cdbr-east-03.cleardb.com',
+        'NAME': 'get_your_music',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
