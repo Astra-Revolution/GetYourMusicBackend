@@ -23,7 +23,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.musician
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     def create(self, validated_data):
@@ -46,7 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.commenter
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     def create(self, validated_data):
@@ -84,7 +84,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 
 
 class FollowerSerializer(serializers.ModelSerializer):
-    musician_id = serializers.CharField(source='follower.user', read_only=True)
+    musician_id = serializers.CharField(source='follower.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     musician_image = serializers.CharField(source='follower.image_url', read_only=True)
     followers = serializers.SerializerMethodField('get_followers', read_only=True)
@@ -92,7 +92,7 @@ class FollowerSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.follower
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     @staticmethod
@@ -107,7 +107,7 @@ class FollowerSerializer(serializers.ModelSerializer):
 
 
 class FollowedSerializer(serializers.ModelSerializer):
-    musician_id = serializers.CharField(source='followed.user', read_only=True)
+    musician_id = serializers.CharField(source='followed.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     musician_image = serializers.CharField(source='followed.image_url', read_only=True)
     followers = serializers.SerializerMethodField('get_followers', read_only=True)
@@ -115,7 +115,7 @@ class FollowedSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.followed
-        full_name = f'${musician.first_name} ${musician.last_name}'
+        full_name = f'{musician.first_name} {musician.last_name}'
         return full_name
 
     @staticmethod
