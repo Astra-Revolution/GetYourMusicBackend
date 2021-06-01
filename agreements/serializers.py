@@ -16,9 +16,21 @@ class ContractSerializer(serializers.ModelSerializer):
     organizer_image = serializers.CharField(source='organizer.image_url', read_only=True)
     musician_image = serializers.CharField(source='musician.image_url', read_only=True)
     district_name = serializers.CharField(source='district.name', read_only=True)
-    organizer_name = serializers.CharField(source='organizer.first_name', read_only=True)
-    musician_name = serializers.CharField(source='musician.first_name', read_only=True)
+    organizer_name = serializers.SerializerMethodField('get_organizer_full_name', read_only=True)
+    musician_name = serializers.SerializerMethodField('get_musician_full_name', read_only=True)
     state = serializers.CharField(source='contract_state.state', read_only=True)
+
+    @staticmethod
+    def get_musician_full_name(self):
+        musician = self.musician
+        full_name = f'{musician.first_name} {musician.last_name}'
+        return full_name
+
+    @staticmethod
+    def get_organizer_full_name(self):
+        organizer = self.organizer
+        full_name = f'{organizer.first_name} {organizer.last_name}'
+        return full_name
 
     def create(self, validated_data):
         organizer = Organizer.objects.get(user=validated_data["organizer_id"])
@@ -42,6 +54,13 @@ class ContractSerializer(serializers.ModelSerializer):
 
 class QualificationSerializer(serializers.ModelSerializer):
     contract_name = serializers.CharField(source='contract.name', read_only=True)
+    organizer_name = serializers.SerializerMethodField('get_organizer_full_name', read_only=True)
+
+    @staticmethod
+    def get_organizer_full_name(self):
+        organizer = self.contract.organizer
+        full_name = f'{organizer.first_name} {organizer.last_name}'
+        return full_name
 
     def create(self, validated_data):
         contract = Contract.objects.get(id=validated_data["contract_id"])
@@ -51,4 +70,4 @@ class QualificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Qualification
-        fields = ('id', 'text', 'score', 'contract_name')
+        fields = ('id', 'text', 'score', 'contract_name', 'organizer_name')
