@@ -123,7 +123,7 @@ class FollowedSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_followers(self):
-        followers = Following.objects.filter(followed_id=self.follower)
+        followers = Following.objects.filter(follower_id=self.follower)
         return followers.count()
 
     class Meta:
