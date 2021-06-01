@@ -1,9 +1,11 @@
-from django.conf.urls import url
 
-from messaging.consumers import ChatConsumer
 
-websocket_urlpatterns = [
-    url(r'^ws/chat/(?P<room_code>\w+)$', ChatConsumer.as_asgi())
+from django.urls import path
+
+from messaging.views import list_chats_by_user
+
+urlpatterns = [
+    path('profiles/<int:user_id>/chats/', list_chats_by_user, name='list_chats_by_user'),
 ]
 
 # application = ProtocolTypeRouter({
