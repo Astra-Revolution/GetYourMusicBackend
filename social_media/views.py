@@ -255,6 +255,27 @@ def list_follower_by_musician(request, musician_id):
         return Response(serializer.data)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def if_follows(request, follower_id, followed_id):
+    try:
+        Musician.objects.get(user=follower_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    try:
+        Musician.objects.get(user=followed_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        if Following.objects.filter(follower_id=follower_id, followed_id=followed_id).exists():
+            exists = 'true'
+        else:
+            exists = 'false'
+        return Response({'exists': exists}, status=status.HTTP_200_OK)
+
+
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def create_delete_following(request, follower_id, followed_id):
