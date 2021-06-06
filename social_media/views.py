@@ -281,6 +281,27 @@ def create_delete_following(request, follower_id, followed_id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def if_follows(request, follower_id, followed_id):
+    try:
+        Musician.objects.get(user=follower_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    try:
+        Musician.objects.get(user=followed_id)
+    except Musician.DoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+        if Following.objects.filter(follower_id=follower_id, followed_id=followed_id).exists():
+            exists = 'true'
+        else:
+            exists = 'false'
+        return Response({'exists': exists}, status=status.HTTP_200_OK)
+
+
 @swagger_auto_schema(method='get', responses={200: notifications_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
