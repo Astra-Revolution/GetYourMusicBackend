@@ -2,15 +2,15 @@
 
 from django.db import migrations
 
-from agreements.seed import create_data
+from agreements.seed import create_data_reservations
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('agreements', '0001_initial'),
+        ('agreements', '0007_contract_event'),
     ]
 
     operations = [
-        migrations.RunPython(create_data),
+        migrations.RunPython(create_data_reservations),
     ]

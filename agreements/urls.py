@@ -1,11 +1,12 @@
 from django.urls import path
 
-from .views import contracts_state_list, contract_list, list_contracts_by_organizer, list_contracts_by_musician, \
-    create_contracts, contract_detail, update_contract_state, list_qualifications_by_musician, create_qualifications, \
-    qualification_detail
+from .views import contracts_state_list, reservations_state_list, contract_list, list_contracts_by_organizer,\
+    list_contracts_by_musician, create_contracts, contract_detail, update_contract_state,\
+    list_qualifications_by_musician, create_qualifications, qualification_detail
 
 urlpatterns = [
     path('contractStates/', contracts_state_list, name='contract_state_list'),
+    path('reservationStates/', reservations_state_list, name='reservation_state_list'),
     path('contracts/', contract_list, name='contract_list'),
     path('organizer-contracts/', list_contracts_by_organizer, name='list_contracts_by_organizer'),
     path('musician-contracts/', list_contracts_by_musician, name='list_contracts_by_musician'),

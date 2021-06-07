@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContractState, Contract, Qualification
+from .models import ContractState, ReservationState, Contract, Qualification
 from accounts.models import Organizer, Musician
 from locations.models import District
 import social_media.notifier
@@ -8,6 +8,12 @@ import social_media.notifier
 class ContractStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContractState
+        fields = ('id', 'state')
+
+
+class ReservationStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReservationState
         fields = ('id', 'state')
 
 

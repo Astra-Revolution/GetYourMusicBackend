@@ -3,6 +3,49 @@ from accounts.models import Organizer, Musician
 from locations.models import District
 
 
+class Agreement(models.Model):
+    name = models.CharField(max_length=60)
+    address = models.CharField(max_length=60)
+    reference = models.CharField(max_length=60)
+    start_date = models.CharField(max_length=60)
+    end_date = models.CharField(max_length=60)
+    description = models.CharField(max_length=120)
+    amount = models.FloatField(null=True)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE)
+    musician = models.ForeignKey(Musician, on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        abstract = True
+
+
+class ReservationState(models.Model):
+    state = models.CharField(max_length=60)
+
+    def __str__(self):
+        return self.state
+
+    class Meta:
+        db_table = 'reservation_states'
+
+
+class Event(Agreement):
+    state = models.CharField(max_length=40)
+
+    class Meta:
+        db_table = 'events'
+
+
+class Reservations(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    suggestion = models.TextField()
+    date = models.CharField(max_length=60)
+
+    class Meta:
+        db_table = 'reservations'
+
+
 class ContractState(models.Model):
     state = models.CharField(max_length=60)
 
@@ -13,17 +56,8 @@ class ContractState(models.Model):
         db_table = 'contract_states'
 
 
-class Contract(models.Model):
-    name = models.CharField(max_length=60)
-    address = models.CharField(max_length=60)
-    reference = models.CharField(max_length=60)
-    start_date = models.CharField(max_length=60)
-    end_date = models.CharField(max_length=60)
-    description = models.CharField(max_length=120, null=True)
-    amount = models.FloatField(null=True)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE)
-    musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+class Contract(Agreement):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
     contract_state = models.ForeignKey(ContractState, on_delete=models.CASCADE)
 
     def __str__(self):

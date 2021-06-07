@@ -5,11 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import *
 
 from accounts.models import Organizer, Musician
-from .models import ContractState, Contract, Qualification
-from .serializers import ContractStateSerializer, ContractSerializer, QualificationSerializer
+from .models import ContractState, ReservationState, Contract, Qualification
+from .serializers import ContractStateSerializer, ReservationStateSerializer,\
+    ContractSerializer, QualificationSerializer
 import social_media.notifier
 
-states_response = openapi.Response('contract states description', ContractStateSerializer(many=True))
+contract_states_response = openapi.Response('contract states description', ContractStateSerializer(many=True))
+reservation_states_response = openapi.Response('reservation states description', ReservationStateSerializer(many=True))
 contracts_response = openapi.Response('contracts description', ContractSerializer(many=True))
 contract_response = openapi.Response('contract description', ContractSerializer)
 qualifications_response = openapi.Response('qualifications description', QualificationSerializer(many=True))
@@ -21,13 +23,23 @@ musician_param = openapi.Parameter('musician_id', openapi.IN_QUERY, description=
 state_param = openapi.Parameter('state_id', openapi.IN_QUERY, description="state id", type=openapi.TYPE_INTEGER)
 
 
-@swagger_auto_schema(method='get', responses={200: states_response})
+@swagger_auto_schema(method='get', responses={200: contract_states_response})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def contracts_state_list(request):
     if request.method == 'GET':
         contract_states = ContractState.objects.all()
         serializer = ContractStateSerializer(contract_states, many=True)
+        return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: reservation_states_response})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def reservations_state_list(request):
+    if request.method == 'GET':
+        reservation_states = ReservationState.objects.all()
+        serializer = ReservationStateSerializer(reservation_states, many=True)
         return Response(serializer.data)
 
 
@@ -104,7 +116,7 @@ def contract_detail(request, contract_id):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ContractSerializer(contract, data=request.data)
+        serializer = ContractSerializer(contract, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

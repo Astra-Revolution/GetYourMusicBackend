@@ -8,10 +8,9 @@ from .serializers import RegionSerializer, ProvinceSerializer, DistrictSerialize
 class RegionTest(APITestCase):
 
     def setUp(self):
-        self.lima = Region.objects.create(name='Lima')
-        self.piura = Region.objects.create(name='Piura')
-        self.puno = Region.objects.create(name='Puno')
-        self.arequipa = Region.objects.create(name='Arequipa')
+        self.lima = Region.objects.get(name='Lima')
+        self.cuzco = Region.objects.get(name='Cuzco')
+        self.arequipa = Region.objects.get(name='Arequipa')
 
     def test_get_all_regions(self):
         response = self.client.get(reverse('regions_list'))
@@ -23,11 +22,9 @@ class RegionTest(APITestCase):
 
 class ProvinceTest(APITestCase):
     def setUp(self):
-        self.region_lima = Region.objects.create(name='Lima')
+        self.region_lima = Region.objects.get(name='Lima')
         self.lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.canete = Province.objects.create(name='Cañete', region=self.region_lima)
-        self.barranca = Province.objects.create(name='Barranca', region=self.region_lima)
-        self.huaral = Province.objects.create(name='Huaral', region=self.region_lima)
+        self.barranca = Province.objects.get(name='Barranca')
 
     def test_get_all_provinces_by_region(self):
         response = self.client.get(reverse('list_provinces_by_region',
@@ -40,12 +37,10 @@ class ProvinceTest(APITestCase):
 
 class DistrictTest(APITestCase):
     def setUp(self):
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
-        self.pueblo_libre = District.objects.create(name='Pueblo Libre', province=self.province_lima)
-        self.san_miguel = District.objects.create(name='San Miguel', province=self.province_lima)
-        self.cercado = District.objects.create(name='Cercado', province=self.province_lima)
+        self.province_lima = Province.objects.get(name='Lima')
+        self.lima = District.objects.get(name='Lima', province=self.province_lima)
+        self.pueblo_libre = District.objects.get(name='Pueblo Libre', province=self.province_lima)
+        self.jesus_maria = District.objects.get(name='Jesus Maria', province=self.province_lima)
 
     def test_get_all_districts_by_province(self):
         response = self.client.get(reverse('list_districts_by_province',

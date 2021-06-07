@@ -28,10 +28,10 @@ class GenreTest(APITestCase):
         self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
                                                      phone='988380177', type='Musician', user=self.noli,
                                                      district=self.los_olivos)
-        self.rock = Genre.objects.create(name='rock')
-        self.pop = Genre.objects.create(name='pop')
-        self.electro = Genre.objects.create(name='electro')
-        self.metal = Genre.objects.create(name='metal')
+        self.rock = Genre.objects.get(name='Rock')
+        self.pop = Genre.objects.get(name='Pop')
+        self.latino = Genre.objects.get(name='Latino')
+        self.classic = Genre.objects.get(name='Classic')
         self.mario_musician.genres.add(self.rock)
         self.mario_musician.genres.add(self.pop)
         self.noli_musician.genres.add(self.rock)
@@ -92,12 +92,12 @@ class InstrumentTest(APITestCase):
         self.noli_musician = Musician.objects.create(first_name='sebastian', last_name='noli', birth_date='01/10/2001',
                                                      phone='988380177', type='Musician', user=self.noli,
                                                      district=self.los_olivos)
-        self.guitar = Instrument.objects.create(name='guitar')
-        self.ukulele = Instrument.objects.create(name='ukulele')
-        self.drums = Instrument.objects.create(name='drums')
-        self.piano = Instrument.objects.create(name='piano')
+        self.guitar = Instrument.objects.get(name='Guitar')
+        self.bass = Instrument.objects.get(name='Bass')
+        self.drums = Instrument.objects.get(name='Drums')
+        self.piano = Instrument.objects.get(name='Piano')
         self.mario_musician.instruments.add(self.guitar)
-        self.mario_musician.instruments.add(self.ukulele)
+        self.mario_musician.instruments.add(self.bass)
         self.noli_musician.instruments.add(self.guitar)
 
     def test_get_all_instruments(self):
@@ -118,7 +118,7 @@ class InstrumentTest(APITestCase):
     def test_create_valid_musicians_instruments(self):
         response = self.client.post(
             reverse('musicians_instruments', kwargs={'musician_id': self.noli_musician.user.id,
-                                                     'instrument_id': self.ukulele.id}))
+                                                     'instrument_id': self.bass.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_invalid_musicians_instruments(self):
@@ -130,7 +130,7 @@ class InstrumentTest(APITestCase):
     def test_delete_valid_musicians_instruments(self):
         response = self.client.delete(
             reverse('musicians_instruments', kwargs={'musician_id': self.mario_musician.user.id,
-                                                     'instrument_id': self.ukulele.id}))
+                                                     'instrument_id': self.bass.id}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_invalid_musicians_instruments(self):

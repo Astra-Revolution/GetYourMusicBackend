@@ -5,18 +5,28 @@ from django.urls import reverse
 from rest_framework import status
 from locations.models import Region, Province, District
 from accounts.models import User, Musician, Organizer
-from .models import ContractState, Contract, Qualification
-from .serializers import ContractStateSerializer, ContractSerializer, QualificationSerializer
+from .models import ReservationState, ContractState, Contract, Qualification
+from .serializers import ReservationStateSerializer, ContractStateSerializer, ContractSerializer,\
+    QualificationSerializer
+
+
+class ReservationStateTest(APITestCase):
+    def setUp(self):
+        admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
+        self.client.force_authenticate(user=admin)
+
+    def test_get_all_contract_states(self):
+        response = self.client.get(reverse('reservation_state_list'))
+        reservation_states = ReservationState.objects.all()
+        serializer = ReservationStateSerializer(reservation_states, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class ContractStateTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
         self.client.force_authenticate(user=admin)
-        self.unanswered = ContractState.objects.create(state='unanswered')
-        self.in_progress = ContractState.objects.create(state='in progress')
-        self.finalized = ContractState.objects.create(state='finalized')
-        self.cancelled = ContractState.objects.create(state='cancelled')
 
     def test_get_all_contract_states(self):
         response = self.client.get(reverse('contract_state_list'))
@@ -56,6 +66,7 @@ class ContractTest(APITestCase):
                                                     musician=self.mario_musician, contract_state=self.unanswered)
         self.valid_contract = {
             'name': 'contract three',
+            'description': 'this is the description',
             'address': 'naples',
             'reference': 'sardinia',
             'start_date': '7/10/2020',
@@ -64,6 +75,7 @@ class ContractTest(APITestCase):
         }
         self.invalid_contract = {
             'name': 'contract three',
+            'description': '',
             'address': '',
             'reference': 'sardinia',
             'start_date': '7/10/2020',

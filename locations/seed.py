@@ -1,5 +1,6 @@
 from locations.models import Region, Province, District
 
+
 def create_data(apps, schema_editor):
     regions = {'Lima': {'Lima': ['Lima', 'Jesus Maria', 'Pueblo Libre'],
                         'Barranca': ['Supe', 'Barranca']},
