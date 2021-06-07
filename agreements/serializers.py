@@ -54,7 +54,13 @@ class ContractSerializer(serializers.ModelSerializer):
 
 def update_score_musician(qualification):
     musician = qualification.contract.musician
-    musician.rating = 1
+    qualifications = Qualification.objects \
+        .filter(contract__in=Contract.objects.filter(musician__user=musician.user.id))
+    result = 0
+    for qualification in qualifications:
+        result = result + qualification.score
+    result = result/qualifications.count()
+    musician.rating = result
     musician.save()
 
 
