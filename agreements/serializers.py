@@ -52,6 +52,12 @@ class ContractSerializer(serializers.ModelSerializer):
                   'district_id')
 
 
+def update_score_musician(qualification):
+    musician = qualification.contract.musician
+    musician.rating = 1
+    musician.save()
+
+
 class QualificationSerializer(serializers.ModelSerializer):
     contract_name = serializers.CharField(source='contract.name', read_only=True)
     organizer_name = serializers.SerializerMethodField('get_organizer_full_name', read_only=True)
@@ -66,6 +72,7 @@ class QualificationSerializer(serializers.ModelSerializer):
         contract = Contract.objects.get(id=validated_data["contract_id"])
         validated_data["contract"] = contract
         qualification = Qualification.objects.create(**validated_data)
+        update_score_musician(qualification)
         return qualification
 
     class Meta:

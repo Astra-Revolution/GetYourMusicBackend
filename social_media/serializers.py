@@ -18,7 +18,7 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    musician_id = serializers.CharField(source='musician.user.id', read_only=True)
+    musician_id = serializers.IntegerField(source='musician.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
 
     @staticmethod
@@ -41,7 +41,7 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    commenter_id = serializers.CharField(source='commenter.user.id', read_only=True)
+    commenter_id = serializers.IntegerField(source='commenter.user.id', read_only=True)
     commenter_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     commenter_image = serializers.CharField(source='commenter.image_url', read_only=True)
     content = serializers.CharField(source='publication.content', read_only=True)
@@ -87,7 +87,7 @@ class FollowingSerializer(serializers.ModelSerializer):
 
 
 class FollowerSerializer(serializers.ModelSerializer):
-    musician_id = serializers.CharField(source='follower.user.id', read_only=True)
+    musician_id = serializers.IntegerField(source='follower.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     musician_image = serializers.CharField(source='follower.image_url', read_only=True)
     followers = serializers.SerializerMethodField('get_followers', read_only=True)
@@ -110,7 +110,7 @@ class FollowerSerializer(serializers.ModelSerializer):
 
 
 class FollowedSerializer(serializers.ModelSerializer):
-    musician_id = serializers.CharField(source='followed.user.id', read_only=True)
+    musician_id = serializers.IntegerField(source='followed.user.id', read_only=True)
     musician_name = serializers.SerializerMethodField('get_full_name', read_only=True)
     musician_image = serializers.CharField(source='followed.image_url', read_only=True)
     followers = serializers.SerializerMethodField('get_followers', read_only=True)
