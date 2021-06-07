@@ -62,10 +62,17 @@ class QualificationSerializer(serializers.ModelSerializer):
         full_name = f'{organizer.first_name} {organizer.last_name}'
         return full_name
 
+    @staticmethod
+    def update_score_musician(self):
+        musician = self.contract.musician
+        musician.rating = 1
+        musician.save()
+
     def create(self, validated_data):
         contract = Contract.objects.get(id=validated_data["contract_id"])
         validated_data["contract"] = contract
         qualification = Qualification.objects.create(**validated_data)
+        self.update_score_musician(qualification)
         return qualification
 
     class Meta:
