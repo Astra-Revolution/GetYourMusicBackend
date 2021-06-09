@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import *
 
+from locations.models import District
 from .serializers import UserSerializer, ProfileSerializer, MusicianSerializer, OrganizerSerializer
 from .models import User, Profile, Musician, Organizer
 
@@ -101,15 +102,20 @@ def profiles_list(request):
 @swagger_auto_schema(methods=['post'], request_body=ProfileSerializer)
 @api_view(['POST'])
 def create_profiles(request, user_id):
-    if request.method == 'POST':
-        try:
-            User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            raise Http404
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        raise Http404
 
+    try:
+        district = District.objects.get(id=request.data['district_id'])
+    except District.DoesNotExist:
+        raise Http404
+
+    if request.method == 'POST':
         serializer = ProfileSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user_id=user_id)
+            serializer.save(user=user, district=district)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

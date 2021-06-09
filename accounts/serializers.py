@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from social_media.models import Following
 from .models import User, Profile, Musician, Organizer
-from locations.models import District
 from datetime import date
 from django.contrib.auth.hashers import make_password
 
@@ -21,15 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    district_id = serializers.IntegerField(write_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     district_name = serializers.CharField(source='district.name', read_only=True)
 
     def create(self, validated_data):
-        user = User.objects.get(id=validated_data["user_id"])
-        validated_data["user"] = user
-        district = District.objects.get(id=validated_data["district_id"])
-        validated_data["district"] = district
         validated_data["register_date"] = str(date.today())
         validated_data["type"] = validated_data["type"].lower()
         profile = None
@@ -42,7 +36,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('user', 'first_name', 'last_name', 'birth_date', 'phone', 'image_url',
-                  'type', 'register_date', 'user_email', 'district_name', 'district_id')
+                  'type', 'register_date', 'user_email', 'district_name')
         read_only_fields = ('register_date', 'user')
 
 

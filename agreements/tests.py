@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from locations.models import Region, Province, District
 from accounts.models import User, Musician, Organizer
-from .models import ReservationState, ContractState, Contract, Qualification
+from .models import ReservationState, ContractState, Contract, Qualification, Event
 from .serializers import ReservationStateSerializer, ContractStateSerializer, ContractSerializer,\
     QualificationSerializer
 
@@ -44,57 +44,55 @@ class ContractTest(APITestCase):
         self.in_progress = ContractState.objects.get(state='progress')
         self.finalized = ContractState.objects.get(state='finalized')
         self.cancelled = ContractState.objects.get(state='cancelled')
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.region_lima = Region.objects.get(name='Lima')
+        self.province_lima = Province.objects.get(name='Lima', region=self.region_lima)
+        self.lima = District.objects.get(name='Lima', province=self.province_lima)
         self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
         self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
         self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
                                                       phone='995995408', type='Musician', user=self.mario,
-                                                      district=self.los_olivos)
+                                                      district=self.lima)
         self.cesar_organizer = Organizer.objects.create(first_name='cesar', last_name='ramirez',
                                                         birth_date='21/03/1996',
                                                         phone='927528321', type='Organizer', user=self.cesar,
-                                                        district=self.los_olivos)
-        self.contract_one = Contract.objects.create(name='contract one', address='tokyo', reference='chiba',
-                                                    start_date='7/10/2020', end_date='8/10/2020',
-                                                    district=self.los_olivos, organizer=self.cesar_organizer,
-                                                    musician=self.mario_musician, contract_state=self.unanswered)
-        self.contract_two = Contract.objects.create(name='contract two', address='naples', reference='roma',
-                                                    start_date='9/10/2020', end_date='10/10/2020',
-                                                    district=self.los_olivos, organizer=self.cesar_organizer,
-                                                    musician=self.mario_musician, contract_state=self.unanswered)
+                                                        district=self.lima)
+        self.event_one = Event.objects.create(name='contract one', address='tokyo', reference='chiba',
+                                              start_date='7/10/2020', end_date='8/10/2020',
+                                              district=self.lima, organizer=self.cesar_organizer)
+        self.event_two = Event.objects.create(name='contract two', address='naples', reference='roma',
+                                              start_date='9/10/2020', end_date='10/10/2020',
+                                              district=self.lima, organizer=self.cesar_organizer)
+        self.contract_one = Contract.objects.create(event=self.event_one, musician=self.mario_musician,
+                                                    contract_state=self.unanswered)
+        self.contract_two = Contract.objects.create(event=self.event_two, musician=self.mario_musician,
+                                                    contract_state=self.unanswered)
         self.valid_contract = {
             'name': 'contract three',
             'description': 'this is the description',
             'address': 'naples',
+            'amount': '500',
             'reference': 'sardinia',
             'start_date': '7/10/2020',
             'end_date': '8/10/2020',
-            'district_id': self.los_olivos.id
+            'district_id': self.lima.id
         }
         self.invalid_contract = {
             'name': 'contract three',
             'description': '',
             'address': '',
+            'amount': '400',
             'reference': 'sardinia',
             'start_date': '7/10/2020',
             'end_date': '8/10/2020',
-            'district_id': self.los_olivos.id
+            'district_id': self.lima.id
         }
-
-    def test_get_all_contract(self):
-        response = self.client.get(reverse('contract_list'))
-        contracts = Contract.objects.all()
-        serializer = ContractSerializer(contracts, many=True)
-        self.assertEqual(response.data, serializer.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_all_contracts_by_organizer(self):
         response = self.client.get(reverse('list_contracts_by_organizer'),
                                    {'organizer_id': self.cesar_organizer.user.id,
                                     'state_id': self.unanswered.id})
-        contracts = Contract.objects.filter(organizer__user=self.cesar_organizer.user.id)
+        contracts = Contract.objects.filter(
+            event__in=Event.objects.filter(organizer__user=self.cesar_organizer.user.id), contract_state__id=1)
         serializer = ContractSerializer(contracts, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,7 +101,7 @@ class ContractTest(APITestCase):
         response = self.client.get(reverse('list_contracts_by_musician'),
                                    {'musician_id': self.mario_musician.user.id,
                                     'state_id': self.unanswered.id})
-        contracts = Contract.objects.filter(musician__user=self.mario_musician.user.id)
+        contracts = Contract.objects.filter(musician__user=self.mario_musician.user.id, contract_state__id=1)
         serializer = ContractSerializer(contracts, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -128,30 +126,6 @@ class ContractTest(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_invalid_contract(self):
-        response = self.client.post(
-            reverse('create_contracts', kwargs={'organizer_id': self.cesar_organizer.user.id,
-                                                'musician_id': self.mario_musician.user.id}),
-            data=json.dumps(self.invalid_contract),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_valid_contract(self):
-        response = self.client.put(
-            reverse('contract_detail', kwargs={'contract_id': self.contract_one.id}),
-            data=json.dumps(self.valid_contract),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_update_invalid_contract(self):
-        response = self.client.put(
-            reverse('contract_detail', kwargs={'contract_id': self.contract_one.id}),
-            data=json.dumps(self.invalid_contract),
-            content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
     def test_delete_valid_contract(self):
         response = self.client.delete(
             reverse('contract_detail', kwargs={'contract_id': self.contract_one.id}))
@@ -165,7 +139,8 @@ class ContractTest(APITestCase):
     def test_partial_update_valid_contract_state(self):
         response = self.client.patch(
             reverse('update_contract_state', kwargs={'contract_id': self.contract_one.id,
-                                                     'state_id': self.in_progress.id}))
+                                                     'state_id': self.in_progress.id}),
+            content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_partial_update_invalid_contract_state(self):
@@ -179,27 +154,29 @@ class QualificationTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
         self.client.force_authenticate(user=admin)
-        self.finalized = ContractState.objects.create(state='finalized')
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
-        self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
+        self.finalized = ContractState.objects.get(state='finalized')
+        self.region_lima = Region.objects.get(name='Lima')
+        self.province_lima = Province.objects.get(name='Lima', region=self.region_lima)
+        self.lima = District.objects.get(name='Lima', province=self.province_lima)
         self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
         self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
         self.mario_musician = Musician.objects.create(first_name='mario', last_name='tataje', birth_date='13/04/2000',
                                                       phone='995995408', type='Musician', user=self.mario,
-                                                      district=self.los_olivos)
+                                                      district=self.lima)
         self.cesar_organizer = Organizer.objects.create(first_name='cesar', last_name='ramirez',
                                                         birth_date='21/03/1996',
                                                         phone='927528321', type='Organizer', user=self.cesar,
-                                                        district=self.los_olivos)
-        self.contract_one = Contract.objects.create(name='contract one', address='tokyo', reference='chiba',
-                                                    start_date='7/10/2020', end_date='8/10/2020',
-                                                    district=self.los_olivos, organizer=self.cesar_organizer,
-                                                    musician=self.mario_musician, contract_state=self.finalized)
-        self.contract_two = Contract.objects.create(name='contract two', address='naples', reference='roma',
-                                                    start_date='9/10/2020', end_date='10/10/2020',
-                                                    district=self.los_olivos, organizer=self.cesar_organizer,
-                                                    musician=self.mario_musician, contract_state=self.finalized)
+                                                        district=self.lima)
+        self.event_one = Event.objects.create(name='contract one', address='tokyo', reference='chiba',
+                                              start_date='7/10/2020', end_date='8/10/2020',
+                                              district=self.lima, organizer=self.cesar_organizer)
+        self.event_two = Event.objects.create(name='contract two', address='naples', reference='roma',
+                                              start_date='9/10/2020', end_date='10/10/2020',
+                                              district=self.lima, organizer=self.cesar_organizer)
+        self.contract_one = Contract.objects.create(event=self.event_one, musician=self.mario_musician,
+                                                    contract_state=self.finalized)
+        self.contract_two = Contract.objects.create(event=self.event_two, musician=self.mario_musician,
+                                                    contract_state=self.finalized)
         self.qualification = Qualification.objects.create(text='Hi, your very talented', score=4.4,
                                                           contract=self.contract_one)
         self.valid_qualification = {

@@ -17,16 +17,17 @@ def notifier(object_observer):
                                     profile=object_observer.followed)
     if isinstance(object_observer, Contract):
         if object_observer.contract_state.state == 'unanswered':
-            notification = Notification(message=f'{object_observer.organizer.first_name} has request you for a contract',
-                                        created_at=timezone.now(),
-                                        profile=object_observer.musician)
+            notification = Notification(
+                message=f'{object_observer.event.organizer.first_name} has request you for a contract',
+                created_at=timezone.now(),
+                profile=object_observer.musician)
         elif object_observer.contract_state.state == 'progress':
             notification = Notification(message=f'{object_observer.musician.first_name} has accepted the contract',
                                         created_at=timezone.now(),
-                                        profile=object_observer.organizer)
+                                        profile=object_observer.event.organizer)
         elif object_observer.contract_state.state == 'cancelled':
             notification = Notification(message=f'{object_observer.musician.first_name} has cancelled the contract',
                                         created_at=timezone.now(),
-                                        profile=object_observer.organizer)
+                                        profile=object_observer.event.organizer)
     notification.save()
     return None

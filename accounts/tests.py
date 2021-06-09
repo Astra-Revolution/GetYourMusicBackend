@@ -75,8 +75,8 @@ class ProfileTest(APITestCase):
     def setUp(self):
         admin = User.objects.create(email='admin@gmail.com', password=make_password('admin98'))
         self.client.force_authenticate(user=admin)
-        self.region_lima = Region.objects.create(name='Lima')
-        self.province_lima = Province.objects.create(name='Lima', region=self.region_lima)
+        self.region_lima = Region.objects.get(name='Lima')
+        self.province_lima = Province.objects.get(name='Lima', region=self.region_lima)
         self.los_olivos = District.objects.create(name='Los olivos', province=self.province_lima)
         self.mario = User.objects.create(email='magotor1304@gmail.com', password=make_password('pacheco98'))
         self.cesar = User.objects.create(email='cesar98@gmail.com', password=make_password('cesar98'))
@@ -147,7 +147,7 @@ class ProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_valid_profile(self):
-        response = self.client.put(
+        response = self.client.patch(
             reverse('profile_detail', kwargs={'profile_id': self.mario_profile.user.id}),
             data=json.dumps(self.valid_profile),
             content_type='application/json'
@@ -155,7 +155,7 @@ class ProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_invalid_profile(self):
-        response = self.client.put(
+        response = self.client.patch(
             reverse('profile_detail', kwargs={'profile_id': self.mario_profile.user.id}),
             data=json.dumps(self.invalid_profile),
             content_type='application/json')

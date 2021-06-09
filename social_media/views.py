@@ -141,13 +141,13 @@ def musician_publications(request, musician_id):
         return Response(serializer.data)
     if request.method == 'POST':
         try:
-            Musician.objects.get(user=musician_id)
+            musician = Musician.objects.get(user=musician_id)
         except Musician.DoesNotExist:
             raise Http404
 
         serializer = PublicationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(musician_id=musician_id)
+            serializer.save(musician=musician)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -194,17 +194,17 @@ def list_comments_by_publication(request, publication_id):
 def create_comments(request, publication_id, commenter_id):
     if request.method == 'POST':
         try:
-            Publication.objects.get(id=publication_id)
+            publication = Publication.objects.get(id=publication_id)
         except Publication.DoesNotExist:
             raise Http404
         try:
-            Profile.objects.get(user=commenter_id)
+            commenter = Profile.objects.get(user=commenter_id)
         except Profile.DoesNotExist:
             raise Http404
 
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(publication_id=publication_id, commenter_id=commenter_id)
+            serializer.save(publication=publication, commenter=commenter)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -280,19 +280,19 @@ def if_follows(request, follower_id, followed_id):
 @permission_classes([IsAuthenticated])
 def create_delete_following(request, follower_id, followed_id):
     try:
-        Musician.objects.get(user=follower_id)
+        follower = Musician.objects.get(user=follower_id)
     except Musician.DoesNotExist:
         raise Http404
 
     try:
-        Musician.objects.get(user=followed_id)
+        followed = Musician.objects.get(user=followed_id)
     except Musician.DoesNotExist:
         raise Http404
 
     if request.method == 'POST':
         serializer = FollowingSerializer(data={})
         if serializer.is_valid():
-            serializer.save(follower_id=follower_id, followed_id=followed_id)
+            serializer.save(follower=follower, followed=followed)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

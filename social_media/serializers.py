@@ -1,8 +1,9 @@
-from rest_framework import serializers
 from datetime import date
-from .models import Publication, Comment, Notification, Following, Genre, Instrument
-from accounts.models import Profile, Musician
+
+from rest_framework import serializers
+
 import social_media.notifier
+from .models import Publication, Comment, Notification, Following, Genre, Instrument
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -28,8 +29,6 @@ class PublicationSerializer(serializers.ModelSerializer):
         return full_name
 
     def create(self, validated_data):
-        musician = Musician.objects.get(user=validated_data["musician_id"])
-        validated_data["musician"] = musician
         validated_data["update_time"] = str(date.today())
         publication = Publication.objects.create(**validated_data)
         return publication
@@ -53,10 +52,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return full_name
 
     def create(self, validated_data):
-        commenter = Profile.objects.get(user=validated_data["commenter_id"])
-        validated_data["commenter"] = commenter
-        publication = Publication.objects.get(id=validated_data["publication_id"])
-        validated_data["publication"] = publication
         comment = Comment.objects.create(**validated_data)
         social_media.notifier.notifier(comment)
         return comment
@@ -71,10 +66,6 @@ class FollowingSerializer(serializers.ModelSerializer):
     followed_name = serializers.CharField(source='followed.first_name', read_only=True)
 
     def create(self, validated_data):
-        follower = Musician.objects.get(user=validated_data["follower_id"])
-        validated_data["follower"] = follower
-        followed = Musician.objects.get(user=validated_data["followed_id"])
-        validated_data["followed"] = followed
         validated_data["follow_date"] = str(date.today())
         following = Following.objects.create(**validated_data)
         social_media.notifier.notifier(following)
