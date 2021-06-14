@@ -1,11 +1,12 @@
 import json
+
 from django.contrib.auth.hashers import make_password
-from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
-from locations.models import Region, Province, District
 from accounts.models import User, Profile, Musician
+from locations.models import Region, Province, District
 from .models import Publication, Comment, Notification, Following, Genre, Instrument
 from .serializers import PublicationSerializer, CommentSerializer, NotificationSerializer, \
     GenreSerializer, InstrumentSerializer, FollowedSerializer, FollowerSerializer
