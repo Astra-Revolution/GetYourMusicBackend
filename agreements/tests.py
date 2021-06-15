@@ -153,7 +153,7 @@ class ContractTest(APITestCase):
     def test_partial_update_valid_contract_state(self):
         response = self.client.patch(
             reverse('update_contract_state', kwargs={'contract_id': self.contract_one.id,
-                                                     'state_id': self.in_progress.id}))
+                                                     'state_id': self.finalized.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_partial_update_invalid_contract_state(self):

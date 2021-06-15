@@ -28,5 +28,9 @@ def notifier(object_observer):
             notification = Notification(message=f'{object_observer.musician.first_name} has cancelled the contract',
                                         created_at=timezone.now(),
                                         profile=object_observer.organizer)
+        elif object_observer.contract_state.state == 'finalized':
+            notification = Notification(message=f'{object_observer.organizer.first_name} has qualify your work',
+                                        created_at=timezone.now(),
+                                        profile=object_observer.musician)
     notification.save()
     return None
