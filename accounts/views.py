@@ -203,6 +203,6 @@ def musician_filter(request):
         if filters.get('instrument'):
             query += ' and mi.instrument_id = %(instrument)s'
         query += ' group by p.user_id'
-        musicians = Musician.objects.raw(query, filters).distinct('user')
+        musicians = Musician.objects.raw(query, filters)
         serializer = MusicianSerializer(musicians, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
