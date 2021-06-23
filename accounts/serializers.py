@@ -32,6 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         validated_data["district"] = district
         validated_data["register_date"] = str(date.today())
         validated_data["type"] = validated_data["type"].lower()
+        validated_data["image_url"] = "https://png.pngitem.com/pimgs/s/130-1300400_user-hd-png-download.png"
         profile = None
         if validated_data["type"] == "musician":
             profile = Musician.objects.create(**validated_data)
