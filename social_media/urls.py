@@ -3,10 +3,13 @@ from django.urls import path
 from .views import publication_list, musician_publications, publication_detail, list_comments_by_publication, \
     create_comments, comment_detail, list_notification_by_profile, list_followed_by_musician, \
     list_follower_by_musician, create_delete_following, genres_list, instruments_list, list_genres_by_musician, \
-    list_instruments_by_musician, musicians_genres, musicians_instruments, if_follows
+    list_instruments_by_musician, musicians_genres, musicians_instruments, if_follows, genres_unauthorized,\
+    instruments_unauthorized
 
 urlpatterns = [
+    path('genres-unauthorized/', genres_unauthorized, name='genres_unauthorized'),
     path('genres/', genres_list, name='genres_list'),
+    path('instruments-unauthorized/', instruments_unauthorized, name='instruments_unauthorized'),
     path('instruments/', instruments_list, name='instruments_list'),
     path('musicians/<int:musician_id>/genres/', list_genres_by_musician, name='list_genres_by_musician'),
     path('musicians/<int:musician_id>/instruments/', list_instruments_by_musician,

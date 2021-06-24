@@ -22,6 +22,15 @@ notifications_response = openapi.Response('notifications description', Notificat
 
 @swagger_auto_schema(method='get', responses={200: genres_response})
 @api_view(['GET'])
+def genres_unauthorized(request):
+    if request.method == 'GET':
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        return Response(serializer.data)
+
+
+@swagger_auto_schema(method='get', responses={200: genres_response})
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def genres_list(request):
     if request.method == 'GET':
@@ -43,6 +52,15 @@ def list_genres_by_musician(request, musician_id):
         musician_genres = Genre.objects.filter(musicians__user=musician_id)
         serializer = GenreSerializer(musician_genres, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='get', responses={200: instruments_response})
+@api_view(['GET'])
+def instruments_unauthorized(request):
+    if request.method == 'GET':
+        instrument = Instrument.objects.all()
+        serializer = InstrumentSerializer(instrument, many=True)
+        return Response(serializer.data)
 
 
 @swagger_auto_schema(method='get', responses={200: instruments_response})

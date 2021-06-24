@@ -150,6 +150,15 @@ def musicians_list(request):
         return Response(serializer.data)
 
 
+@swagger_auto_schema(method='get', responses={200: musicians_response})
+@api_view(['GET'])
+def musicians_unauthorized(request):
+    if request.method == 'GET':
+        musicians = Musician.objects.all()
+        serializer = MusicianSerializer(musicians, many=True)
+        return Response(serializer.data)
+
+
 @swagger_auto_schema(method='get', responses={200: musician_response})
 @swagger_auto_schema(methods=['patch'], request_body=MusicianSerializer)
 @api_view(['GET', 'PATCH'])
@@ -180,6 +189,31 @@ def organizers_list(request):
         organizers = Organizer.objects.all()
         serializer = OrganizerSerializer(organizers, many=True)
         return Response(serializer.data)
+
+
+@api_view(['POST'])
+def musician_filter_unauthorized(request):
+    if request.method == 'POST':
+        filters = verify_field(request.data)
+        query = '''select *
+        from musicians m
+        inner join profiles p on m.musicians_id = p.user_id
+        inner join districts d on p.district_id = d.id
+        left join genres_musicians mg on m.musicians_id=mg.musician_id
+        left join instruments_musicians mi on m.musicians_id=mi.musician_id
+        where 1 = 1'''
+        if filters.get('district'):
+            query += ' and p.district_id = %(district)s'
+        if filters.get('name'):
+            query += ' and p.first_name like %(name)s'
+        if filters.get('genre'):
+            query += ' and mg.genre_id = %(genre)s'
+        if filters.get('instrument'):
+            query += ' and mi.instrument_id = %(instrument)s'
+        query += ' group by p.user_id'
+        musicians = Musician.objects.raw(query, filters)
+        serializer = MusicianSerializer(musicians, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
