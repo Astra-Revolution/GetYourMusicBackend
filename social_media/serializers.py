@@ -24,8 +24,11 @@ class PublicationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.musician
-        full_name = f'{musician.first_name} {musician.last_name}'
-        return full_name
+        if musician.last_name is None:
+            return musician.first_name
+        else:
+            full_name = f'{musician.first_name} {musician.last_name}'
+            return full_name
 
     def create(self, validated_data):
         musician = Musician.objects.get(user=validated_data["musician_id"])
@@ -48,9 +51,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_full_name(self):
-        musician = self.commenter
-        full_name = f'{musician.first_name} {musician.last_name}'
-        return full_name
+        profile = self.commenter
+        if profile.last_name is None:
+            return profile.first_name
+        else:
+            full_name = f'{profile.first_name} {profile.last_name}'
+            return full_name
 
     def create(self, validated_data):
         commenter = Profile.objects.get(user=validated_data["commenter_id"])
@@ -95,8 +101,11 @@ class FollowerSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.follower
-        full_name = f'{musician.first_name} {musician.last_name}'
-        return full_name
+        if musician.last_name is None:
+            return musician.first_name
+        else:
+            full_name = f'{musician.first_name} {musician.last_name}'
+            return full_name
 
     @staticmethod
     def get_followers(self):
@@ -118,8 +127,11 @@ class FollowedSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_full_name(self):
         musician = self.followed
-        full_name = f'{musician.first_name} {musician.last_name}'
-        return full_name
+        if musician.last_name is None:
+            return musician.first_name
+        else:
+            full_name = f'{musician.first_name} {musician.last_name}'
+            return full_name
 
     @staticmethod
     def get_followers(self):

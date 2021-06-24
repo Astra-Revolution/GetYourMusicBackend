@@ -23,14 +23,20 @@ class ContractSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_musician_full_name(self):
         musician = self.musician
-        full_name = f'{musician.first_name} {musician.last_name}'
-        return full_name
+        if musician.last_name is None:
+            return musician.first_name
+        else:
+            full_name = f'{musician.first_name} {musician.last_name}'
+            return full_name
 
     @staticmethod
     def get_organizer_full_name(self):
         organizer = self.organizer
-        full_name = f'{organizer.first_name} {organizer.last_name}'
-        return full_name
+        if organizer.last_name is None:
+            return organizer.first_name
+        else:
+            full_name = f'{organizer.first_name} {organizer.last_name}'
+            return full_name
 
     def create(self, validated_data):
         organizer = Organizer.objects.get(user=validated_data["organizer_id"])
@@ -71,8 +77,11 @@ class QualificationSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_organizer_full_name(self):
         organizer = self.contract.organizer
-        full_name = f'{organizer.first_name} {organizer.last_name}'
-        return full_name
+        if organizer.last_name is None:
+            return organizer.first_name
+        else:
+            full_name = f'{organizer.first_name} {organizer.last_name}'
+            return full_name
 
     def create(self, validated_data):
         contract = Contract.objects.get(id=validated_data["contract_id"])
