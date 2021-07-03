@@ -123,10 +123,10 @@ WSGI_APPLICATION = 'GetYourMusic.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gym_python',
+        'NAME': 'final_gym',
         'USER': 'root',
-        'PASSWORD': 'bankingpassword202101',
-        'HOST': '35.238.218.97',
+        'PASSWORD': 'astra98',
+        'HOST': '34.134.108.23',
         'PORT': '3306',
     }
 }
