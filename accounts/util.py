@@ -13,22 +13,10 @@ def send_email(recipients, subject, message):
 
 
 def verify_field(data):
-    try:
-        district = data['district']
-    except:
-        district = None
-    try:
-        genre = data['genre']
-    except:
-        genre = None
-    try:
-        instrument = data['instrument']
-    except:
-        instrument = None
-    try:
-        name = data['name']
-    except:
-        name = None
+    district = data.get('district', None)
+    genre = data.get('genre', None)
+    instrument = data.get('instrument', None)
+    name = data.get('name', None)
     filters = {
         'district': district,
         'name': name,
